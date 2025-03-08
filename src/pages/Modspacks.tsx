@@ -1,5 +1,5 @@
 
-const Dashboard = () => {
+const Modspacks = () => {
     return (
         <>
             <p>soon..</p>
@@ -7,4 +7,4 @@ const Dashboard = () => {
     );
 }
 
-export default Dashboard;
+export default Modspacks;

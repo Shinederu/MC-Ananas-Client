@@ -1,4 +1,4 @@
-import Dashboard from "@/pages/Dashboard";
+import Server from "@/pages/Server";
 import Login from "@/pages/Login";
 import { Navigate, Route } from "react-router-dom";
 
@@ -7,15 +7,18 @@ import { Navigate, Route } from "react-router-dom";
 const anonymous = () => (
     <>
         <Route path="*" element={<Navigate to="/" replace />} /> {/*Redirection pour les routes non-autorisées & inconnue */}
-        <Route path="/" element={<Login />} />
+        <Route path="/Login" element={<Login />} />
     </>
 )
 
 
 const logged = () => (
     <>
-        {anonymous()}
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="*" element={<Navigate to="/Server" replace />} /> {/*Redirection pour les routes non-autorisées & inconnue */}
+        <Route path="/Server" element={<Server />} />
+        <Route path="/Users" element={<Server />} />
+        <Route path="/Profile" element={<Server />} />
+        <Route path="/Modpack" element={<Server />} />
     </>
 )
 
