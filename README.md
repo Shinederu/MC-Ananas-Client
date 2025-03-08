@@ -1,2 +1,1 @@
-# MC-Ananas-Client
- Client Web pour MC-Ananas
+# Play.Shinederu.lol version 0.0.1
