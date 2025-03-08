@@ -12,6 +12,7 @@ export const useHttpClient = () => {
             method = 'GET',
             body = null,
             headers = {},
+            credentials = true,
             onError,
             onSuccess,
         }: {
@@ -20,6 +21,7 @@ export const useHttpClient = () => {
             method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
             body?: any;
             headers?: Record<string, string>;
+            credentials?: boolean;
             onError?: (error: string) => void;
             onSuccess?: (data: any) => void;
         }) => {
@@ -45,7 +47,7 @@ export const useHttpClient = () => {
                     body: method !== 'GET' ? (isJson ? JSON.stringify(body) : body) : null,
                     headers: finalHeaders,
                     signal: httpAbortCtrl.signal,
-                    credentials: "include",
+                    credentials: credentials ? 'include' : 'omit',
                 });
 
                 const responseData = await response.json();
