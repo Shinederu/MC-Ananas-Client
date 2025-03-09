@@ -1,6 +1,9 @@
 import Server from "@/pages/Server";
 import Login from "@/pages/Login";
 import { Navigate, Route } from "react-router-dom";
+import Users from "@/pages/Users";
+import Profile from "@/pages/Profile";
+import Modspacks from "@/pages/Modspacks";
 
 
 //Routes autorisées pour les anonymes
@@ -16,9 +19,9 @@ const logged = () => (
     <>
         <Route path="*" element={<Navigate to="/Server" replace />} /> {/*Redirection pour les routes non-autorisées & inconnue */}
         <Route path="/Server" element={<Server />} />
-        <Route path="/Users" element={<Server />} />
-        <Route path="/Profile" element={<Server />} />
-        <Route path="/Modpack" element={<Server />} />
+        <Route path="/Users" element={<Users />} />
+        <Route path="/Profile" element={<Profile />} />
+        <Route path="/Modpack" element={<Modspacks />} />
     </>
 )
 
