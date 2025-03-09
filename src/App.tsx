@@ -6,6 +6,7 @@ import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "./shared/context/AuthContext";
 //import { ModalContext } from "./shared/context/ModalContext";
 import Title from "./components/decoration/Title";
+import Header from "./components/headers/Header";
 
 const App = () => {
 
@@ -68,6 +69,7 @@ const App = () => {
 
   return (
     <div className="bg-[#f7f7f7] font-[Poppins] min-h-screen flex flex-col">
+      <Header/>
       <main className="w-11/12 mx-auto my-10 p-8 rounded-lg shadow-lg text-center flex-grow">
         {isReady ?
           <Routes>{getRoutes(authCtx.permission)}</Routes>
