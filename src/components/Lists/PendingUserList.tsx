@@ -1,4 +1,3 @@
-import { ModalContext } from "@/shared/context/ModalContext";
 import { UserType } from "@/types/User";
 import { useEffect, useState } from "react";
 
