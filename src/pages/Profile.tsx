@@ -2,8 +2,8 @@ import MinecraftSkinCard from "@/components/cards/MInecraftSkinCard";
 import { useState } from "react";
 
 const Profile = () => {
-    const [discordId, setDiscordId] = useState("123456789");
-    const [discordUsername, setDiscordUsername] = useState("User#0001");
+    const [discordId] = useState("123456789");
+    const [discordUsername] = useState("User#0001");
     const [minecraftUsername, setMinecraftUsername] = useState("Steve");
 
     const handleUpdateMinecraft = () => {

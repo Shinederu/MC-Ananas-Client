@@ -3,5 +3,6 @@ export type UserType = {
         username_discord: string;
         username_minecraft: string;
         permission: number | null;
-        garant: string | null
+        garant: string | null;
+        ban_reason: string | null;
 };

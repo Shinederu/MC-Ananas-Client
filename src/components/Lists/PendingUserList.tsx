@@ -7,8 +7,8 @@ const PendingUserList = () => {
 
     useEffect(() => {
         setUserList([
-            { pk_user: 0, permission: 0, username_discord: "test", username_minecraft: "test", garant: "Shinederu" },
-            { pk_user: 1, permission: 0, username_discord: "tes", username_minecraft: "te", garant: "aas" }
+            { pk_user: 0, permission: 0, username_discord: "test", username_minecraft: "test", garant: "Shinederu", ban_reason: "" },
+            { pk_user: 1, permission: 0, username_discord: "tes", username_minecraft: "te", garant: "aas", ban_reason: "" }
 
         ])
     }, []);
@@ -28,7 +28,7 @@ const PendingUserList = () => {
 
     return (
         <>
-            <div className="w-full bg-gradient-to-br from-red-600 to-fuchsia-500 p-6 rounded-2xl shadow-lg text-white">
+            <div className="w-full bg-gradient-to-br from-blue-600 to-fuchsia-500 p-6 rounded-2xl shadow-lg text-white">
                 <h1 className="text-3xl font-bold text-center mb-4">Invitez vos amis !</h1>
                 <p>Vous pouvez inviter d'autres joueurs de confiance a rejoindre le serveur et vous porter garant pour eux.</p>
                 <p className="bg-red-800 m-2 border-white border-2 font-semibold p-2">En cliquant sur "<u>oui</u>" pour les utilisateurs ci-dessous, vous vous portez garant(e) et accepter le risque d'être sanctionné(e) si votre invité(e) porte préjudice au serveur ou à ces membres.</p>
