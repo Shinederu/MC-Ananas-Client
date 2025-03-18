@@ -4,11 +4,10 @@ import Title from "../decoration/Title";
 const Header = () => {
     return (
         <>
-            <header className="flex flex-col items-center">
+            <header className="bg-white flex flex-col items-center">
                 <Title size={1} title="ShinedePlay" />
                 <nav>
                     {/* Conteneur des liens de navigation */}
-                    <div className="absolute left-1/2 -translate-x-1/2 space-x-10">
                         <div className="flex gap-4">
                             <Link className="text-lg transition-colors duration-300 hover:text-[#6a11cb]" to="/Server">Serveur</Link>
                             <p>|</p>
@@ -18,7 +17,6 @@ const Header = () => {
                             <p>|</p>
                             <Link className="text-lg transition-colors duration-300 hover:text-[#6a11cb]" to="/Modpack">Modpack</Link>
                         </div>
-                    </div>
                 </nav>
             </header>
         </>
