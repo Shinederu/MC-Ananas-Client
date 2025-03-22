@@ -1,13 +1,9 @@
 import { UserType } from "@/types/User";
-import { useEffect, useState } from "react";
 
-const AuthorizedUsersList = () => {
-    const [userList, setUserList] = useState<UserType[]>([])
-    useEffect(() => {
-        setUserList([
-            { pk_user: 0, permission: 0, username_discord: "test", username_minecraft: "test", garant: "Shinederu", ban_reason: "" }
-        ])
-    }, []);
+type AuthorizedUsersList = {
+    userList: UserType[];
+}
+const AuthorizedUsersList = (props: AuthorizedUsersList) => {
 
     const ban = (pk_user: number) => {
         const confirmDelete = confirm("Êtes-vous sûr de vouloir le Bannir ce connard ? (pk " + { pk_user } + ")");
@@ -38,16 +34,16 @@ const AuthorizedUsersList = () => {
                         <th className="px-4 py-2 text-center">Actions</th>
                     </tr>
                     <tbody>
-                        {userList.map((user, index) => (
+                        {props.userList.map((user, index) => (
                             <tr
                                 key={index}
                                 className="border-b hover:bg-blue-100 transition-colors hover:text-black"
                             >
-                                <td className="px-4 py-2">{user.username_minecraft}</td>
-                                <td className="px-4 py-2">{user.username_discord}</td>
+                                <td className="px-4 py-2">{user.minecraft_username}</td>
+                                <td className="px-4 py-2">{user.discord_username}</td>
                                 <td className="px-4 py-2">{user.garant}</td>
                                 <td className="flex justify-center px-4 py-2 gap-2">
-                                    <button className="b-2 border px-2 font-bold bg-red-600 hover:scale-125 transition" onClick={() => ban(user.pk_user)}>Bannir</button>/<button className="b-2 border px-2 font-bold bg-sky-500 hover:scale-125 transition" onClick={() => promote(user.pk_user)}>Promotion</button></td>
+                                    <button className="b-2 border px-2 font-bold bg-red-600 hover:scale-125 transition" onClick={() => ban(user.id)}>Bannir</button>/<button className="b-2 border px-2 font-bold bg-sky-500 hover:scale-125 transition" onClick={() => promote(user.id)}>Promotion</button></td>
                             </tr>
                         ))}
                     </tbody>

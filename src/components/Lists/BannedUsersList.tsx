@@ -1,7 +1,7 @@
-import { UserType } from "@/types/User";
-import { useEffect, useState } from "react";
 
 const BannedUsersList = () => {
+
+    /*
     const [userList, setUserList] = useState<UserType[]>([])
 
 
@@ -59,6 +59,7 @@ const BannedUsersList = () => {
             </div>
         </>
     );
+    */
 }
 
 export default BannedUsersList;

@@ -1,27 +1,18 @@
 import { UserType } from "@/types/User";
-import { useEffect, useState } from "react";
+type PendingUserListProps = {
+    userList: UserType[];
+}
+const PendingUserList = (props: PendingUserListProps) => {
 
-const PendingUserList = () => {
-    const [userList, setUserList] = useState<UserType[]>([])
+    const accepting = (id: number) => {
 
-
-    useEffect(() => {
-        setUserList([
-            { pk_user: 0, permission: 0, username_discord: "test", username_minecraft: "test", garant: "Shinederu", ban_reason: "" },
-            { pk_user: 1, permission: 0, username_discord: "tes", username_minecraft: "te", garant: "aas", ban_reason: "" }
-
-        ])
-    }, []);
-
-    const accepting = (pk_user: number) => {
-
-        alert("Vous vous porter désormais garant pour le joueurs identifié " + pk_user);
+        alert("Vous vous porter désormais garant pour le joueurs identifié " + id);
 
     }
 
-    const decline = (pk_user: number) => {
+    const decline = (id: number) => {
 
-        alert("Vous avez refuser de vous porter garant pour le joueurs identifié " + pk_user);
+        alert("Vous avez refuser de vous porter garant pour le joueurs identifié " + id);
 
     }
 
@@ -40,7 +31,7 @@ const PendingUserList = () => {
                             <th className="px-4 py-2 text-center">Discord</th>
                             <th className="px-4 py-2 text-center">Accepter ?</th>
                         </tr>
-                        {userList.length === 0 ?
+                        {props.userList.length === 0 ?
 
                             <tr>
                                 <td colSpan={3} className="text-center py-4">
@@ -49,15 +40,15 @@ const PendingUserList = () => {
                             </tr>
 
                             :
-                            userList.map((user) => (
+                            props.userList.map((user) => (
                                 <tr
-                                    key={user.pk_user}
+                                    key={user.id}
                                     className="border-b transition-colors"
                                 >
-                                    <td className="px-4 py-2">{user.username_minecraft}</td>
-                                    <td className="px-4 py-2">{user.username_discord}</td>
+                                    <td className="px-4 py-2">{user.minecraft_username}</td>
+                                    <td className="px-4 py-2">{user.discord_username}</td>
                                     <td className="flex justify-center px-4 py-2 gap-2">
-                                        <button className="b-2 border px-2 font-bold bg-lime-600 hover:scale-125 transition" onClick={() => accepting(user.pk_user)}>Oui</button>/<button className="b-2 border px-2 font-bold bg-red-600 hover:scale-125 transition" onClick={() => decline(user.pk_user)}>Non</button>
+                                        <button className="b-2 border px-2 font-bold bg-lime-600 hover:scale-125 transition" onClick={() => accepting(user.id)}>Oui</button>/<button className="b-2 border px-2 font-bold bg-red-600 hover:scale-125 transition" onClick={() => decline(user.id)}>Non</button>
                                     </td>
                                 </tr>
                             ))
