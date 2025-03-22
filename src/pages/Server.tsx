@@ -22,6 +22,8 @@ const Server = () => {
                     <div className="bg-gray-300 rounded-2xl shadow-lg p-4 h-full">
                         {/* <iframe src="https://bluemap.play.shinederu.lol" className="w-full h-full rounded-2xl shadow-lg" title="BlueMap" />*/}
                     </div>
+
+
                 </div>
             </div>
         </>
