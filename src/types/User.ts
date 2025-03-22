@@ -1,8 +1,10 @@
 export type UserType = {
-        pk_user: number;
-        username_discord: string;
-        username_minecraft: string;
-        permission: number | null;
+        id: number;
+        discord_avatar: string;
+        discord_username: string;
+        discord_id: string;
+        role: string;
+        minecraft_username: string;
+        minecraft_uuid: string;
         garant: string | null;
-        ban_reason: string | null;
 };

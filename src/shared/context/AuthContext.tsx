@@ -1,12 +1,17 @@
 import { createContext, PropsWithChildren, useState } from 'react';
+/*
+isLoggedIn
+token
+role
+username
+*/
+
 
 type AuthDataType = {
     isLoggedIn: boolean;
-    permission: number;
+    role: string;
     token: string;
-    pk: number;
-    pseudo: string;
-    mail: string;
+    username: string;
 };
 
 interface AuthContextType extends AuthDataType {
@@ -15,22 +20,18 @@ interface AuthContextType extends AuthDataType {
 
 export const AuthContext = createContext<AuthContextType>({
     isLoggedIn: false,
-    permission: 0,
+    role: '',
     token: '',
-    pk: 0,
-    pseudo: '',
-    mail: '',
+    username: '',
     setAuthData: () => { },
 });
 
 export const AuthProvider = ({ children }: PropsWithChildren) => {
     const [authData, setAuthData] = useState<AuthDataType>({
         isLoggedIn: false,
-        permission: 0,
+        role: '',
         token: '',
-        pk: 0,
-        pseudo: '',
-        mail: '',
+        username: '',
     });
 
     // Fonction qui met à jour seulement les champs nécessaires

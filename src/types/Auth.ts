@@ -1,8 +1,6 @@
 export type AuthDataType = {
     isLoggedIn: boolean;
-    permission: number;
+    role: string;
     token: string;
-    pk: number;
-    pseudo: string;
-    mail: string;
+    username: string;
 };
