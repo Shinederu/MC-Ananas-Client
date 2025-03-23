@@ -55,8 +55,6 @@ export const getRoutes = (role: string) => {
         case "ROLE_ADMIN":
             return admin();
         default:
-            console.log("ANONYMOUS");
             return anonymous();
-            break;
     }
 };

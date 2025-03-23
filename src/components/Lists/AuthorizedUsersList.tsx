@@ -39,9 +39,9 @@ const AuthorizedUsersList = (props: AuthorizedUsersList) => {
                                 key={user.id}
                                 className="border-b hover:bg-blue-100 transition-colors hover:text-black"
                             >
-                                <td className="px-4 py-2">{user.minecraft_username}</td>
-                                <td className="px-4 py-2">{user.discord_username}</td>
-                                <td className="px-4 py-2">{user.garant ?? ''}</td>
+                                <td className="px-4 py-2">{user.minecraft?.pseudo}</td>
+                                <td className="px-4 py-2">{user.username}</td>
+                                <td className="px-4 py-2">{user.minecraft?.garant?.pseudo ?? ''}</td>
                                 <td className="flex justify-center px-4 py-2 gap-2">
                                     <button className="b-2 border px-2 font-bold bg-red-600 hover:scale-125 transition" onClick={() => ban(user.id)}>Bannir</button>/<button className="b-2 border px-2 font-bold bg-sky-500 hover:scale-125 transition" onClick={() => promote(user.id)}>Promotion</button></td>
                             </tr>

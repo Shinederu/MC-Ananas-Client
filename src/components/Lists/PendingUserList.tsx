@@ -45,8 +45,8 @@ const PendingUserList = (props: PendingUserListProps) => {
                                     key={user.id}
                                     className="border-b transition-colors"
                                 >
-                                    <td className="px-4 py-2">{user.minecraft_username}</td>
-                                    <td className="px-4 py-2">{user.discord_username}</td>
+                                    <td className="px-4 py-2">{user.minecraft?.pseudo}</td>
+                                    <td className="px-4 py-2">{user.username}</td>
                                     <td className="flex justify-center px-4 py-2 gap-2">
                                         <button className="b-2 border px-2 font-bold bg-lime-600 hover:scale-125 transition" onClick={() => accepting(user.id)}>Oui</button>/<button className="b-2 border px-2 font-bold bg-red-600 hover:scale-125 transition" onClick={() => decline(user.id)}>Non</button>
                                     </td>

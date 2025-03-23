@@ -35,8 +35,6 @@ const ServerInfoCard = () => {
                             version: data.version,
                             icon: data.icon
                         });
-                    } else {
-                        console.log("Aucune connexion au serveur");
                     }
                 },
                 onError: () => {

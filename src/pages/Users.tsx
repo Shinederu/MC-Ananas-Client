@@ -25,10 +25,7 @@ const Users = () => {
                     onSuccess: (data) => {
                         if (data) {
                             setAllowUsers(data?.minecrafts);
-                            console.log(allowUsers);
                             // setMyGarantedUsers(data?.user);
-                        } else {
-                            console.log("Aucune data...");
                         }
                     },
                     onError: (error) => {
@@ -56,7 +53,7 @@ const Users = () => {
                     </div>
                 </div>
                 <div>
-                   {/* <BannedUsersList/>*/}
+                    {/* <BannedUsersList/>*/}
                 </div>
             </div>
         </>

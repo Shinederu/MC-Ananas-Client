@@ -1,11 +1,20 @@
 export type UserType = {
         id: number;
-        discord_avatar: string;
-        discord_username: string;
-        discord_id: string;
-        role: string;
-        minecraft_id: number;
-        minecraft_username: string;
-        minecraft_uuid: string;
-        garant: string | null;
+        username: string;
+        discordId: string;
+        avatar: string;
+        minecraft: MinecraftUserType | null;
+        securityRank: SecurityRankType | null;
 };
+
+export type MinecraftUserType = {
+        id: number;
+        pseudo: string;
+        uuid: string;
+        garant: MinecraftUserType | null;
+}
+
+export type SecurityRankType = {
+        rolename: string;
+        role: string[]
+}
