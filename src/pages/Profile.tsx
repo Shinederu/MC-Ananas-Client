@@ -18,6 +18,7 @@ const Profile = () => {
             discord_username: '',
             discord_id: '',
             role: '',
+            minecraft_id: 0,
             minecraft_username: '',
             minecraft_uuid: '',
             garant: null,
@@ -35,15 +36,16 @@ const Profile = () => {
                     discord_username: data.user.username,
                     discord_id: data.user.discordId,
                     discord_avatar: data.user.discord_avatar,
-
+                    
+                    minecraft_id: data.user.minecraft?.id ?? 0,
                     minecraft_username: data.user.minecraft?.pseudo ?? '',
                     minecraft_uuid: data.user.minecraft?.uuid ?? '',
-                    garant: data.user.minecraft.garant?.pseudo ?? '',
+                    garant: data.user.minecraft?.garant?.pseudo ?? '',
                     role: data.user.securityRank.rolename,
                 });
             },
             onError: (error) => {
-                modalCtx.setMessage("Impossible de récupéré les données " + error);
+                modalCtx.setMessage(error);
                 modalCtx.setType("error");
                 modalCtx.setIsOpen(true);
             },
@@ -81,24 +83,77 @@ const Profile = () => {
         }
     };
 
-    const handleMinecraftRefresh = () => {
-        const newUsername = prompt("Entrez votre nouveau pseudo Minecraft:", userDetails.minecraft_username);
-        if (newUsername) {
 
-        }
+    const sendMinecraftRefresh = async () => {
+        await sendRequest({
+            key: 4,
+            url: import.meta.env.VITE_PLAY_API_URL + '/profil/minecraft/' + userDetails.minecraft_id + '/edit',
+            method: 'POST',
+            headers: { Authorization: authCtx.token },
+            onSuccess: (data) => {
+                modalCtx.setMessage(data.message);
+                modalCtx.setType("confirm");
+                modalCtx.setIsOpen(true);
+                sendGetProfile();
+            },
+            onError: (error) => {
+                modalCtx.setMessage(error);
+                modalCtx.setType("error");
+                modalCtx.setIsOpen(true);
+            },
+        });
     };
 
-    const handleMinecraftDelete = () => {
-        const newUsername = prompt("Êtes-vous sûr de vouloir supprimer votre compte minecraft ?", userDetails.minecraft_username);
-        if (newUsername) {
 
+    const handleMinecraftDelete = () => {
+        const choice = confirm("Êtes-vous sûr de vouloir Dé-lier votre compte minecraft ? Vous et les personnes dont vous êtes le garant perdrez l'accès au serveur...");
+        if (choice) {
+            const sendMinecraftDelete = async () => {
+                await sendRequest({
+                    key: 6,
+                    url: import.meta.env.VITE_PLAY_API_URL + '/profil/minecraft/' + userDetails.minecraft_id + '/delete',
+                    method: 'DELETE',
+                    headers: { Authorization: authCtx.token },
+                    onSuccess: (data) => {
+                        modalCtx.setMessage(data.message);
+                        modalCtx.setType("confirm");
+                        modalCtx.setIsOpen(true);
+                        sendGetProfile();
+                    },
+                    onError: (error) => {
+                        modalCtx.setMessage(error);
+                        modalCtx.setType("error");
+                        modalCtx.setIsOpen(true);
+                    },
+                });
+            };
+            sendMinecraftDelete();
         }
     };
 
     const handleDeleteAccount = () => {
-        const confirmDelete = confirm("Êtes-vous sûr de vouloir supprimer votre compte ?");
-        if (confirmDelete) {
-            alert("Compte supprimé");
+        const choice = confirm("Êtes-vous sûr de vouloir supprimer votre compte ?");
+        if (choice) {
+            const sendDeleteAccount = async () => {
+                await sendRequest({
+                    key: 5,
+                    url: import.meta.env.VITE_PLAY_API_URL + '/profil/' + userDetails.id + '/delete',
+                    method: 'DELETE',
+                    headers: { Authorization: authCtx.token },
+                    onSuccess: (data) => {
+                        modalCtx.setMessage(data.message);
+                        modalCtx.setType("confirm");
+                        modalCtx.setIsOpen(true);
+                        location.reload();
+                    },
+                    onError: (error) => {
+                        modalCtx.setMessage(error);
+                        modalCtx.setType("error");
+                        modalCtx.setIsOpen(true);
+                    },
+                });
+            };
+            sendDeleteAccount();
         }
     };
 
@@ -142,26 +197,43 @@ const Profile = () => {
                                 className="w-3/5 px-3 py-2 border rounded-md bg-gray-100  text-gray-900 text-center"
                             />
                         </div>
+                        <div>
+                            <label className="block text-gray-100">Minecraft UUID</label>
+                            <input
+                                type="text"
+                                value={userDetails.minecraft_uuid}
+                                disabled
+                                className="w-3/5 px-3 py-2 border rounded-md bg-gray-100  text-gray-900 text-center"
+                            />
+                        </div>
 
                         <div className="mt-6 mb-4 flex gap-4 justify-center">
-                            <button
-                                onClick={handleMinecraftAdd}
-                                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                            >
-                                Ajouter lier mon compte Minecraft
-                            </button>
-                            <button
-                                onClick={handleMinecraftRefresh}
-                                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
-                            >
-                                Actualisé mon compte Minecraft
-                            </button>
-                            <button
-                                onClick={handleMinecraftDelete}
-                                className="px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700"
-                            >
-                                Supprimer mon compte Minecraft
-                            </button>
+
+                            {userDetails.minecraft_username ?
+                                <>
+                                    <button
+                                        onClick={sendMinecraftRefresh}
+                                        className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                                    >
+                                        Actualisé mon compte Minecraft
+                                    </button>
+                                    <button
+                                        onClick={handleMinecraftDelete}
+                                        className="px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700"
+                                    >
+                                        Supprimer mon compte Minecraft
+                                    </button>
+                                </>
+                                :
+                                <>
+                                    <button
+                                        onClick={handleMinecraftAdd}
+                                        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                                    >
+                                        Ajouter lier mon compte Minecraft
+                                    </button>
+                                </>
+                            }
                             <button
                                 onClick={handleDeleteAccount}
                                 className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700"

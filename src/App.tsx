@@ -41,8 +41,8 @@ const App = () => {
           }
           navigate(loc.pathname);
         },
-        onError: (data) => {
-          modalCtx.setMessage("Impossible de contacter le serveur... Réessayer plus tard !\n <b>Erreur rencontrée:</b> \n" + data);
+        onError: () => {
+          modalCtx.setMessage("Impossible de contacter le serveur... Réessayer plus tard !");
           modalCtx.setType("error");
           modalCtx.setIsOpen(true);
         },

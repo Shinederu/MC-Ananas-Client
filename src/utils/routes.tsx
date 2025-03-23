@@ -39,17 +39,14 @@ const friends = () => (
 
 const admin = () => (
     <>
-        {logged()}
         {minecraft()}
         <Route path="/Modpack" element={<Modspacks />} />
     </>
 )
 
 export const getRoutes = (role: string) => {
-    console.log("Route DEBUG: ", role, typeof role, role.length);
     switch (role.trim()) {
         case "ROLE_USER":
-            console.log("ROLE_USER");
             return logged();
         case "ROLE_MINECRAFT":
             return minecraft();

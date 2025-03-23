@@ -1,8 +1,7 @@
 import AuthorizedUsersList from "@/components/Lists/AuthorizedUsersList";
-import PendingUserList from "@/components/Lists/PendingUserList";
+//import PendingUserList from "@/components/Lists/PendingUserList";
 import { ModalContext } from "@/shared/context/ModalContext";
 import { useHttpClient } from "@/shared/hooks/http-hook";
-import { UserType } from "@/types/User";
 import { useContext, useEffect, useState } from "react";
 
 
@@ -12,8 +11,8 @@ const Users = () => {
 
     const { sendRequest } = useHttpClient();
 
-    const [allowUsers, setAllowUsers] = useState<UserType[]>([]);
-    const [myGarantedUsers, setMyGarantedUsers] = useState<UserType[]>([]);
+    const [allowUsers, setAllowUsers] = useState<any>([]);
+    //const [myGarantedUsers, setMyGarantedUsers] = useState<UserType[]>([]);
 
 
     useEffect(() => {
@@ -25,15 +24,15 @@ const Users = () => {
                     method: 'GET',
                     onSuccess: (data) => {
                         if (data) {
-                            console.log(data);
-                            setAllowUsers(data.minecraft);
-                            setMyGarantedUsers(data.user);
+                            setAllowUsers(data?.minecrafts);
+                            console.log(allowUsers);
+                            // setMyGarantedUsers(data?.user);
                         } else {
                             console.log("Aucune data...");
                         }
                     },
-                    onError: () => {
-                        modalCtx.setMessage("Impossible de contacter le serveur... Réessayer plus tard !");
+                    onError: (error) => {
+                        modalCtx.setMessage(error);
                         modalCtx.setType("error");
                         modalCtx.setIsOpen(true);
                     },
@@ -50,7 +49,7 @@ const Users = () => {
             <div className="grid grid-rows-2 gap-4">
                 <div className="flex flex-row gap-4">
                     <div className="flex-1">
-                        <PendingUserList userList={myGarantedUsers} />
+                        {/*<PendingUserList userList={myGarantedUsers} />*/}
                     </div>
                     <div className="flex-1">
                         <AuthorizedUsersList userList={allowUsers} />
