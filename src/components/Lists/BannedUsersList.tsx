@@ -1,22 +1,42 @@
+import { AuthContext } from "@/shared/context/AuthContext";
+import { ModalContext } from "@/shared/context/ModalContext";
+import { useHttpClient } from "@/shared/hooks/http-hook";
+import { UserType } from "@/types/User";
+import { useContext } from "react";
 
-const BannedUsersList = () => {
+type BannedUsersListProps = {
+    userList: UserType[];
+    refreshList: () => void;
+}
+const BannedUsersList = (props: BannedUsersListProps) => {
 
-    /*
-    const [userList, setUserList] = useState<UserType[]>([])
+    const { sendRequest } = useHttpClient();
+    const modalCtx = useContext(ModalContext);
+    const authCtx = useContext(AuthContext);
 
-
-    useEffect(() => {
-        setUserList([
-            { pk_user: 0, permission: 0, username_discord: "test", username_minecraft: "test", garant: "Shinederu", ban_reason: "Connard" },
-            { pk_user: 1, permission: 0, username_discord: "tes", username_minecraft: "te", garant: "aas", ban_reason: "J'l'aime po" }
-
-        ])
-    }, []);
-
-    const unban = (pk_user: number) => {
-        const confirmDelete = confirm("Êtes-vous sûr de vouloir le débannir ce connard ? (pk " + { pk_user } + ")");
-        if (confirmDelete) {
-            alert("Compte débanni... eh merde....");
+    const unban = (user: UserType) => {
+        const confirmBan = confirm("Êtes-vous sûr de vouloir débannir" + user.minecraft?.pseudo + "?");
+        if (confirmBan) {
+            const sendMinecraftUnban = async () => {
+                await sendRequest({
+                    key: 4,
+                    url: import.meta.env.VITE_PLAY_API_URL + '/users/minecraft/' + user.minecraft?.id + '/unban',
+                    method: 'POST',
+                    headers: { Authorization: authCtx.token },
+                    onSuccess: (data) => {
+                        modalCtx.setMessage(data.message);
+                        modalCtx.setType("confirm");
+                        modalCtx.setIsOpen(true);
+                        props.refreshList();
+                    },
+                    onError: (error) => {
+                        modalCtx.setMessage(error);
+                        modalCtx.setType("error");
+                        modalCtx.setIsOpen(true);
+                    },
+                });
+            };
+            sendMinecraftUnban();
         }
     }
 
@@ -33,33 +53,35 @@ const BannedUsersList = () => {
                             <th className="px-4 py-2 text-center">Raison</th>
                             <th className="px-4 py-2 text-center">Action</th>
                         </tr>
-                        {userList.length === 0 ?
-
-                            <tr>
-                                <td colSpan={4} className="text-center py-4">
-                                    <p className="justify-center">Aucune personne bannie...</p>
-                                </td>
-                            </tr>
-
+                        {props.userList ?
+                            <>
+                                {props.userList.map((user) => (
+                                    <tr
+                                        key={user.id}
+                                        className="border-b transition-colors"
+                                    >
+                                        <td className="px-4 py-2">{user.minecraft?.pseudo}</td>
+                                        <td className="px-4 py-2">{user.username}</td>
+                                        <td className="px-4 py-2"> {user.minecraft?.ban}</td>
+                                        <td><button className="b-2 border px-2 font-bold bg-red-600 hover:scale-125 transition" onClick={() => unban(user)}>Débannir</button></td>
+                                    </tr>
+                                ))}
+                            </>
                             :
-                            userList.map((user) => (
-                                <tr
-                                    key={user.pk_user}
-                                    className="border-b transition-colors"
-                                >
-                                    <td className="px-4 py-2">{user.username_minecraft}</td>
-                                    <td className="px-4 py-2">{user.username_discord}</td>
-                                    <td className="px-4 py-2"> {user.ban_reason}</td>
-                                    <td><button className="b-2 border px-2 font-bold bg-red-600 hover:scale-125 transition" onClick={() => unban(user.pk_user)}>Débannir</button></td>
+                            <>
+                                <tr>
+                                    <td colSpan={4} className="text-center py-4">
+                                        <p className="justify-center">Aucune personne bannie...</p>
+                                    </td>
                                 </tr>
-                            ))
+                            </>
                         }
                     </tbody>
                 </table>
             </div>
         </>
     );
-    */
+
 }
 
 export default BannedUsersList;

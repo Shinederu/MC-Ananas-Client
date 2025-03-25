@@ -12,6 +12,7 @@ export type MinecraftUserType = {
         pseudo: string;
         uuid: string;
         garant: MinecraftUserType | null;
+        ban: boolean;
 }
 
 export type SecurityRankType = {

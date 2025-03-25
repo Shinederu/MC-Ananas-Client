@@ -31,7 +31,7 @@ const App = () => {
             authCtx.setAuthData({
               isLoggedIn: true,
               token: "Bearer " + data.Token,
-              role: data.Role[0],
+              role: data.Role[0].trim(),
               username: data.Username,
             });
           } else {

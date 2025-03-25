@@ -1,21 +1,68 @@
+import { AuthContext } from "@/shared/context/AuthContext";
+import { ModalContext } from "@/shared/context/ModalContext";
+import { useHttpClient } from "@/shared/hooks/http-hook";
 import { UserType } from "@/types/User";
+import { useContext } from "react";
 
-type AuthorizedUsersList = {
+type AuthorizedUsersListProps = {
     userList: UserType[];
+    refreshList: () => void;
 }
-const AuthorizedUsersList = (props: AuthorizedUsersList) => {
+const AuthorizedUsersList = (props: AuthorizedUsersListProps) => {
 
-    const ban = (pk_user: number) => {
-        const confirmDelete = confirm("Êtes-vous sûr de vouloir le Bannir ce connard ? (pk " + { pk_user } + ")");
-        if (confirmDelete) {
-            alert("Compte banni !!!! Youpiiiie !!!!");
+    const { sendRequest } = useHttpClient();
+    const modalCtx = useContext(ModalContext);
+    const authCtx = useContext(AuthContext);
+
+    const ban = (user: UserType) => {
+        const confirmBan = confirm("Êtes-vous sûr de vouloir bannir" + user.minecraft?.pseudo + "?");
+        if (confirmBan) {
+            const sendMinecraftBan = async () => {
+                await sendRequest({
+                    key: 4,
+                    url: import.meta.env.VITE_PLAY_API_URL + '/users/minecraft/' + user.minecraft?.id + '/ban',
+                    method: 'POST',
+                    headers: { Authorization: authCtx.token },
+                    onSuccess: (data) => {
+                        modalCtx.setMessage(data.message);
+                        modalCtx.setType("confirm");
+                        modalCtx.setIsOpen(true);
+                        props.refreshList();
+                    },
+                    onError: (error) => {
+                        modalCtx.setMessage(error);
+                        modalCtx.setType("error");
+                        modalCtx.setIsOpen(true);
+                    },
+                });
+            };
+            sendMinecraftBan();
         }
     }
 
-    const promote = (pk_user: number) => {
-        const confirmDelete = confirm("Êtes-vous sûr de vouloir rendre amin ce joueur ? (pk " + { pk_user } + ")");
-        if (confirmDelete) {
-            alert("Un nouveau dieu est entré en scène !");
+    const promote = (user: UserType) => {
+        const confirmPromote = confirm("Êtes-vous sûr de vouloir rendre admin " + user.minecraft?.pseudo + " ?");
+        if (confirmPromote) {
+            const sendMinecraftPromote = async () => {
+                await sendRequest({
+                    key: 4,
+                    url: import.meta.env.VITE_PLAY_API_URL + '/users/minecraft/' + user.minecraft?.id + '/promote',
+                    method: 'POST',
+                    headers: { Authorization: authCtx.token },
+                    onSuccess: (data) => {
+                        modalCtx.setMessage(data.message);
+                        modalCtx.setType("confirm");
+                        modalCtx.setIsOpen(true);
+                        props.refreshList;
+                    },
+                    onError: (error) => {
+                        modalCtx.setMessage(error);
+                        modalCtx.setType("error");
+                        modalCtx.setIsOpen(true);
+                    },
+                });
+            };
+            sendMinecraftPromote();
         }
     }
 
@@ -27,28 +74,57 @@ const AuthorizedUsersList = (props: AuthorizedUsersList) => {
                 <p>Voici tous les joueurs que tu peux rencontrer sur le serveur ! Amusez-vous bien ! </p>
 
                 <table className="rounded-lg w-full mt-4">
-                    <tr className="bg-gray-500 text-white">
-                        <th className="px-4 py-2 text-center">Minecraft</th>
-                        <th className="px-4 py-2 text-center">Discord</th>
-                        <th className="px-4 py-2 text-center">Garant</th>
-                        <th className="px-4 py-2 text-center">Actions</th>
-                    </tr>
+
                     <tbody>
-                        {props.userList.map((user) => (
-                            <tr
-                                key={user.id}
-                                className="border-b hover:bg-blue-100 transition-colors hover:text-black"
-                            >
-                                <td className="px-4 py-2">{user.minecraft?.pseudo}</td>
-                                <td className="px-4 py-2">{user.username}</td>
-                                <td className="px-4 py-2">{user.minecraft?.garant?.pseudo ?? ''}</td>
-                                <td className="flex justify-center px-4 py-2 gap-2">
-                                    <button className="b-2 border px-2 font-bold bg-red-600 hover:scale-125 transition" onClick={() => ban(user.id)}>Bannir</button>/<button className="b-2 border px-2 font-bold bg-sky-500 hover:scale-125 transition" onClick={() => promote(user.id)}>Promotion</button></td>
-                            </tr>
-                        ))}
+                        <tr className="bg-gray-500 text-white">
+                            <th className="px-4 py-2 text-center">Minecraft</th>
+                            <th className="px-4 py-2 text-center">Discord</th>
+                            <th className="px-4 py-2 text-center">Rang</th>
+                            {authCtx.role == "ROLE_FRIEND" || authCtx.role == "ROLE_ADMIN" ?
+                                <>
+                                    <th className="px-4 py-2 text-center">Actions</th>
+                                </>
+                                :
+                                <>
+                                </>
+                            }
+
+                        </tr>
+                        {props.userList ?
+                            <>
+                                {props.userList.map((user) => (
+                                    <tr
+                                        key={user.id}
+                                        className="border-b hover:bg-blue-100 transition-colors hover:text-black"
+                                    >
+                                        <td className="px-4 py-2">{user.username}</td>
+                                        <td className="px-4 py-2">{user.minecraft?.pseudo}</td>
+                                        <td className="px-4 py-2">{user.securityRank?.rolename}</td>
+                                        {authCtx.role == "ROLE_FRIEND" || authCtx.role == "ROLE_ADMIN" ?
+                                            <>
+                                                <td className="flex justify-center px-4 py-2 gap-2">
+                                                    <button className="b-2 border px-2 font-bold bg-red-600 hover:scale-125 transition" onClick={() => ban(user)}>Bannir</button>/<button className="b-2 border px-2 font-bold bg-sky-500 hover:scale-125 transition" onClick={() => promote(user)}>Promotion</button>
+                                                </td>
+                                            </>
+                                            :
+                                            <>
+                                            </>
+                                        }
+                                    </tr>
+                                ))}
+                            </>
+                            :
+                            <>
+                                <tr>
+                                    <td colSpan={4} className="text-center py-4">
+                                        <p className="justify-center">Aucune personne autorisée...</p>
+                                    </td>
+                                </tr>
+                            </>
+                        }
                     </tbody>
                 </table>
-            </div>
+            </div >
         </>
     );
 }

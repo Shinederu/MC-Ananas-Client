@@ -33,7 +33,7 @@ const minecraft = () => (
 
 const friends = () => (
     <>
-        {logged()}
+        {minecraft()}
     </>
 )
 
@@ -45,7 +45,7 @@ const admin = () => (
 )
 
 export const getRoutes = (role: string) => {
-    switch (role.trim()) {
+    switch (role) {
         case "ROLE_USER":
             return logged();
         case "ROLE_MINECRAFT":

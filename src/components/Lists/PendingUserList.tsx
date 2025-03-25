@@ -1,19 +1,70 @@
+import { AuthContext } from "@/shared/context/AuthContext";
+import { ModalContext } from "@/shared/context/ModalContext";
+import { useHttpClient } from "@/shared/hooks/http-hook";
 import { UserType } from "@/types/User";
+import { useContext } from "react";
 type PendingUserListProps = {
     userList: UserType[];
+    refreshList: () => void;
 }
 const PendingUserList = (props: PendingUserListProps) => {
 
-    const accepting = (id: number) => {
 
-        alert("Vous vous porter désormais garant pour le joueurs identifié " + id);
+    const { sendRequest } = useHttpClient();
+    const modalCtx = useContext(ModalContext);
+    const authCtx = useContext(AuthContext);
 
+    const accepted = (user: UserType) => {
+        const confirmAccepting = confirm("Êtes-vous sûr de vouloir vous portez garant de " + user.minecraft?.pseudo + "? En cas de problème de problème avec cette personne, vous pourriez subir des répercussions !");
+        if (confirmAccepting) {
+            const sendAccepted = async () => {
+                await sendRequest({
+                    key: 4,
+                    url: import.meta.env.VITE_PLAY_API_URL + '/users/minecraft/' + user.minecraft?.id + '/garant-accepted',
+                    method: 'POST',
+                    headers: { Authorization: authCtx.token },
+                    onSuccess: (data) => {
+                        modalCtx.setMessage(data.message);
+                        modalCtx.setType("confirm");
+                        modalCtx.setIsOpen(true);
+                        props.refreshList();
+                    },
+                    onError: (error) => {
+                        modalCtx.setMessage(error);
+                        modalCtx.setType("error");
+                        modalCtx.setIsOpen(true);
+                    },
+                });
+            };
+            sendAccepted();
+        }
     }
 
-    const decline = (id: number) => {
+    const refused = (user: UserType) => {
 
-        alert("Vous avez refuser de vous porter garant pour le joueurs identifié " + id);
-
+        const confirmAccepting = confirm("Souhaitez-vous refuser de vous porter garant de " + user.minecraft?.pseudo + "?");
+        if (confirmAccepting) {
+            const sendRefused = async () => {
+                await sendRequest({
+                    key: 4,
+                    url: import.meta.env.VITE_PLAY_API_URL + '/users/minecraft/' + user.minecraft?.id + '/garant-refused',
+                    method: 'DELETE',
+                    headers: { Authorization: authCtx.token },
+                    onSuccess: (data) => {
+                        modalCtx.setMessage(data.message);
+                        modalCtx.setType("confirm");
+                        modalCtx.setIsOpen(true);
+                        props.refreshList();
+                    },
+                    onError: (error) => {
+                        modalCtx.setMessage(error);
+                        modalCtx.setType("error");
+                        modalCtx.setIsOpen(true);
+                    },
+                });
+            };
+            sendRefused();
+        }
     }
 
 
@@ -31,27 +82,29 @@ const PendingUserList = (props: PendingUserListProps) => {
                             <th className="px-4 py-2 text-center">Discord</th>
                             <th className="px-4 py-2 text-center">Accepter ?</th>
                         </tr>
-                        {props.userList.length === 0 ?
-
-                            <tr>
-                                <td colSpan={3} className="text-center py-4">
-                                    <p className="justify-center">Aucune demande en attente</p>
-                                </td>
-                            </tr>
-
+                        {props.userList ?
+                            <>
+                                {props.userList.map((user) => (
+                                    <tr
+                                        key={user.id}
+                                        className="border-b transition-colors"
+                                    >
+                                        <td className="px-4 py-2">{user.minecraft?.pseudo}</td>
+                                        <td className="px-4 py-2">{user.username}</td>
+                                        <td className="flex justify-center px-4 py-2 gap-2">
+                                            <button className="b-2 border px-2 font-bold bg-lime-600 hover:scale-125 transition" onClick={() => accepted(user)}>Oui</button>/<button className="b-2 border px-2 font-bold bg-red-600 hover:scale-125 transition" onClick={() => refused(user)}>Non</button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </>
                             :
-                            props.userList.map((user) => (
-                                <tr
-                                    key={user.id}
-                                    className="border-b transition-colors"
-                                >
-                                    <td className="px-4 py-2">{user.minecraft?.pseudo}</td>
-                                    <td className="px-4 py-2">{user.username}</td>
-                                    <td className="flex justify-center px-4 py-2 gap-2">
-                                        <button className="b-2 border px-2 font-bold bg-lime-600 hover:scale-125 transition" onClick={() => accepting(user.id)}>Oui</button>/<button className="b-2 border px-2 font-bold bg-red-600 hover:scale-125 transition" onClick={() => decline(user.id)}>Non</button>
+                            <>
+                                <tr>
+                                    <td colSpan={3} className="text-center py-4">
+                                        <p className="justify-center">Aucune demande en attente</p>
                                     </td>
                                 </tr>
-                            ))
+                            </>
                         }
                     </tbody>
                 </table>
