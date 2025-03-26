@@ -4,6 +4,7 @@ import { Navigate, Route } from "react-router-dom";
 import Users from "@/pages/Users";
 import Profile from "@/pages/Profile";
 import Modspacks from "@/pages/Modspacks";
+import Banned from "@/pages/Banned";
 
 
 //Routes autorisées pour les anonymes
@@ -11,6 +12,13 @@ const anonymous = () => (
     <>
         <Route path="*" element={<Navigate to="/Login" replace />} /> {/*Redirection pour les routes non-autorisées & inconnue */}
         <Route path="/Login" element={<Login />} />
+    </>
+)
+
+const banned = () => (
+    <>
+        <Route path="*" element={<Navigate to="/Ban" replace />} /> {/*Redirection pour les routes non-autorisées & inconnue */}
+        <Route path="/Ban" element={<Banned />} />
     </>
 )
 
@@ -40,12 +48,15 @@ const friends = () => (
 const admin = () => (
     <>
         {minecraft()}
+        <Route path="/Banned" element={<Banned />} />
         <Route path="/Modpack" element={<Modspacks />} />
     </>
 )
 
 export const getRoutes = (role: string) => {
     switch (role) {
+        case "ROLE_BAN":
+            return banned();
         case "ROLE_USER":
             return logged();
         case "ROLE_MINECRAFT":

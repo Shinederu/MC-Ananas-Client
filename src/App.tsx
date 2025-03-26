@@ -7,6 +7,7 @@ import { AuthContext } from "./shared/context/AuthContext";
 import { ModalContext } from "./shared/context/ModalContext";
 import Title from "./components/decoration/Title";
 import Header from "./components/headers/Header";
+import Banned from "./pages/Banned";
 
 const App = () => {
 
@@ -26,17 +27,12 @@ const App = () => {
         url: import.meta.env.VITE_PLAY_API_URL + '/isConnected',
         method: 'GET',
         onSuccess: (data) => {
-
           if (data.Token) {
             authCtx.setAuthData({
               isLoggedIn: true,
               token: "Bearer " + data.Token,
               role: data.Role[0].trim(),
               username: data.Username,
-            });
-          } else {
-            authCtx.setAuthData({
-              isLoggedIn: false,
             });
           }
           navigate(loc.pathname);
@@ -47,26 +43,72 @@ const App = () => {
           modalCtx.setIsOpen(true);
         },
       });
-
     };
     sendIsConnected();
     setIsReady(true);
   }, []);
 
+  const sendRefreshRole = async () => {
+    await sendRequest({
+      key: 3,
+      url: import.meta.env.VITE_PLAY_API_URL + '/isConnected',
+      method: 'GET',
+      onSuccess: (data) => {
+        if (data.Role[0].trim() != authCtx.role) {
+          authCtx.setAuthData({
+            role: data.Role[0].trim(),
+          });
+        }
+      },
+      onError: () => {
+        modalCtx.setMessage("Impossible de contacter le serveur... Réessayer plus tard !");
+        modalCtx.setType("error");
+        modalCtx.setIsOpen(true);
+      },
+    });
+
+  };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (authCtx.isLoggedIn) {
+        sendRefreshRole();
+      }
+    }, 5000); //Temps en ms
+
+    return () => clearInterval(interval);
+  }, []);
+
 
   return (
     <>
-      <div className="bg-[#f7f7f7] font-[Poppins] min-h-screen flex flex-col">
-        <Header />
-        <main className="w-11/12 mx-auto my-10 p-8 rounded-lg shadow-lg text-center flex-grow">
-          {isReady ?
-            <Routes>{getRoutes(authCtx.role)}</Routes>
+      {isReady ?
+        <>
+          {authCtx.role == "ROLE_BAN" ?
+            <>
+              <Banned />
+            </>
             :
-            <Title size={1} title="Chargement..." />
+            <>
+              <div className="bg-[#f7f7f7] font-[Poppins] min-h-screen flex flex-col">
+                <Header />
+                <main className="w-11/12 mx-auto my-10 p-8 rounded-lg shadow-lg text-center flex-grow">
+                  {isReady ?
+                    <Routes>{getRoutes(authCtx.role)}</Routes>
+                    :
+                    <Title size={1} title="Chargement..." />
+                  }
+                </main>
+                <Footer />
+              </div>
+            </>
           }
-        </main>
-        <Footer />
-      </div>
+        </>
+        :
+        <>
+          <Title size={1} title="Chargement..." />
+        </>
+      }
     </>
   );
 };
