@@ -13,17 +13,7 @@ const Profile = () => {
 
 
 
-    const [userDetails, setUserDetails] = useState<UserType>(
-        {
-            id: 0,
-            username: '',
-            discordId: '',
-            avatar: '',
-            minecraft: null,
-            securityRank: null,
-
-        }
-    )
+    const [userDetails, setUserDetails] = useState<UserType>();
     const [listGarants, setListGarants] = useState<MinecraftUserType[]>();
     const [selectedGarant, setSelectedGarant] = useState<number>(0);
 
@@ -35,15 +25,8 @@ const Profile = () => {
             method: 'GET',
             headers: { Authorization: authCtx.token },
             onSuccess: (data) => {
-                setUserDetails({
-                    id: data[0].user.id,
-                    username: data[0].user.username,
-                    discordId: data[0].user.discordId,
-                    avatar: data[0].user.avatar,
-                    minecraft: data[0].user.minecraft,
-                    securityRank: data[0].user.securityRank
-                });
-                setListGarants(data[1].usersVerified?.map((entry: any) => entry.minecraft));
+                setUserDetails(data.user);
+                setListGarants(data.allowedGarant);
             },
             onError: (error) => {
                 modalCtx.setMessage(error);
@@ -53,9 +36,13 @@ const Profile = () => {
         });
     };
 
+
+
     useEffect(() => {
         sendGetProfile();
     }, []);
+
+
 
     const handleMinecraftAdd = () => {
         if (selectedGarant > 0) {
@@ -94,7 +81,7 @@ const Profile = () => {
     const sendMinecraftRefresh = async () => {
         await sendRequest({
             key: 4,
-            url: import.meta.env.VITE_PLAY_API_URL + '/profil/minecraft/' + userDetails.minecraft?.id + '/edit',
+            url: import.meta.env.VITE_PLAY_API_URL + '/profil/minecraft/' + userDetails?.minecraft?.id + '/edit',
             method: 'POST',
             headers: { Authorization: authCtx.token },
             onSuccess: (data) => {
@@ -118,7 +105,7 @@ const Profile = () => {
             const sendMinecraftDelete = async () => {
                 await sendRequest({
                     key: 6,
-                    url: import.meta.env.VITE_PLAY_API_URL + '/profil/minecraft/' + userDetails.minecraft?.id + '/delete',
+                    url: import.meta.env.VITE_PLAY_API_URL + '/profil/minecraft/' + userDetails?.minecraft?.id + '/delete',
                     method: 'DELETE',
                     headers: { Authorization: authCtx.token },
                     onSuccess: (data) => {
@@ -144,7 +131,7 @@ const Profile = () => {
             const sendDeleteAccount = async () => {
                 await sendRequest({
                     key: 5,
-                    url: import.meta.env.VITE_PLAY_API_URL + '/profil/' + userDetails.id + '/delete',
+                    url: import.meta.env.VITE_PLAY_API_URL + '/profil/' + userDetails?.id + '/delete',
                     method: 'DELETE',
                     headers: { Authorization: authCtx.token },
                     onSuccess: (data) => {
@@ -169,7 +156,7 @@ const Profile = () => {
             <div className="grid grid-cols-3 gap-4">
                 {/* Section Skin Minecraft */}
                 <div>
-                    <MinecraftSkinCard username={userDetails.minecraft?.pseudo + ""} />
+                    <MinecraftSkinCard username={userDetails?.minecraft?.pseudo + ""} />
                 </div>
 
                 {/* Section Infos */}
@@ -181,7 +168,7 @@ const Profile = () => {
                             <input
 
                                 type="text"
-                                value={userDetails.discordId}
+                                value={userDetails?.discordId}
                                 disabled
                                 className="w-3/5 px-3 py-2 border rounded-md bg-gray-100 text-gray-900 text-center"
                             />
@@ -190,7 +177,7 @@ const Profile = () => {
                             <label className="block text-gray-100">Discord Username</label>
                             <input
                                 type="text"
-                                value={userDetails.username}
+                                value={userDetails?.username}
                                 disabled
                                 className="w-3/5 px-3 py-2 border rounded-md bg-gray-100  text-gray-900 text-center"
                             />
@@ -199,7 +186,7 @@ const Profile = () => {
                             <label className="block text-gray-100">Minecraft Account</label>
                             <input
                                 type="text"
-                                value={userDetails.minecraft?.pseudo}
+                                value={userDetails?.minecraft?.pseudo}
                                 disabled
                                 className="w-3/5 px-3 py-2 border rounded-md bg-gray-100  text-gray-900 text-center"
                             />
@@ -208,19 +195,19 @@ const Profile = () => {
                             <label className="block text-gray-100">Minecraft UUID</label>
                             <input
                                 type="text"
-                                value={userDetails.minecraft?.uuid}
+                                value={userDetails?.minecraft?.uuid}
                                 disabled
                                 className="w-3/5 px-3 py-2 border rounded-md bg-gray-100  text-gray-900 text-center"
                             />
                         </div>
-                        {userDetails.minecraft ?
+                        {userDetails?.minecraft ?
                             <>
 
                                 <div>
                                     <label className="block text-gray-100">Votre garant</label>
                                     <input
                                         type="text"
-                                        value={userDetails.minecraft?.garant?.pseudo}
+                                        value={userDetails?.minecraft?.garant?.pseudo}
                                         disabled
                                         className="w-3/5 px-3 py-2 border rounded-md bg-gray-100  text-gray-900 text-center"
                                     />
@@ -236,18 +223,17 @@ const Profile = () => {
                                         className="w-3/5 px-3 py-2 border rounded-md bg-gray-100 text-gray-900 text-center"
                                     >
                                         <option value="">-- Sélectionner un garant --</option>
-                                        {listGarants?.map((usersVerified) => (
-                                            <option key={usersVerified.id} value={usersVerified.id}>{usersVerified.pseudo}</option>
+                                        {listGarants?.map((minecraftUser) => (
+                                            <option key={minecraftUser.id} value={minecraftUser.id}>{minecraftUser.pseudo}</option>
                                         ))}
                                     </select>
                                 </div>
                             </>
                         }
 
-
                         <div className="mt-6 mb-4 flex gap-4 justify-center">
 
-                            {userDetails.minecraft ?
+                            {userDetails?.minecraft ?
                                 <>
                                     <button
                                         onClick={sendMinecraftRefresh}
@@ -279,9 +265,9 @@ const Profile = () => {
                                 Supprimer mon compte (du site)
                             </button>
                         </div>
-                        {userDetails.minecraft ?
+                        {userDetails?.minecraft ?
                             <>
-                                {userDetails.securityRank?.role[0] == "ROLE_USER" ?
+                                {userDetails?.securityRank?.role[0] == "ROLE_USER" ?
                                     <>
                                         <p className="bg-slate-800 m-2 border-yellow-400 border-2 font-semibold p-2">Votre compte est en attente de l'aprobation de votre garant. Repassez plus tard !</p>
                                     </>

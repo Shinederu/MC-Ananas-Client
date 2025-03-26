@@ -1,11 +1,12 @@
 import { AuthContext } from "@/shared/context/AuthContext";
 import { ModalContext } from "@/shared/context/ModalContext";
 import { useHttpClient } from "@/shared/hooks/http-hook";
-import { UserType } from "@/types/User";
+import { BanType, MinecraftUserType } from "@/types/User";
+import { DateTimeFormatter } from "@/utils/DateTimeFormatter";
 import { useContext } from "react";
 
 type BannedUsersListProps = {
-    userList: UserType[];
+    banList: BanType[];
     refreshList: () => void;
 }
 const BannedUsersList = (props: BannedUsersListProps) => {
@@ -14,13 +15,13 @@ const BannedUsersList = (props: BannedUsersListProps) => {
     const modalCtx = useContext(ModalContext);
     const authCtx = useContext(AuthContext);
 
-    const unban = (user: UserType) => {
-        const confirmBan = confirm("Êtes-vous sûr de vouloir débannir" + user.minecraft?.pseudo + "?");
+    const unban = (user: MinecraftUserType) => {
+        const confirmBan = confirm("Êtes-vous sûr de vouloir débannir" + user.pseudo + "?");
         if (confirmBan) {
             const sendMinecraftUnban = async () => {
                 await sendRequest({
                     key: 4,
-                    url: import.meta.env.VITE_PLAY_API_URL + '/users/minecraft/' + user.minecraft?.id + '/unban',
+                    url: import.meta.env.VITE_PLAY_API_URL + '/users/minecraft/' + user.id + '/unban',
                     method: 'POST',
                     headers: { Authorization: authCtx.token },
                     onSuccess: (data) => {
@@ -51,19 +52,21 @@ const BannedUsersList = (props: BannedUsersListProps) => {
                             <th className="px-4 py-2 text-center">Minecraft</th>
                             <th className="px-4 py-2 text-center">Discord</th>
                             <th className="px-4 py-2 text-center">Raison</th>
+                            <th className="px-4 py-2 text-center">Date/Heure</th>
                             <th className="px-4 py-2 text-center">Action</th>
                         </tr>
-                        {props.userList ?
+                        {props.banList[0] ?
                             <>
-                                {props.userList.map((user) => (
+                                {props.banList.map((ban) => (
                                     <tr
-                                        key={user.id}
+                                        key={ban.id}
                                         className="border-b transition-colors"
                                     >
-                                        <td className="px-4 py-2">{user.minecraft?.pseudo}</td>
-                                        <td className="px-4 py-2">{user.username}</td>
-                                        <td className="px-4 py-2"> {user.minecraft?.ban}</td>
-                                        <td><button className="b-2 border px-2 font-bold bg-red-600 hover:scale-125 transition" onClick={() => unban(user)}>Débannir</button></td>
+                                        <td className="px-4 py-2">{ban.minecraft.pseudo}</td>
+                                        <td className="px-4 py-2">{ban.minecraft.user.username}</td>
+                                        <td className="px-4 py-2">{ban.reason}</td>
+                                        <td className="px-4 py-2">{DateTimeFormatter(ban.createdAt)}</td>
+                                        <td><button className="b-2 border px-2 font-bold bg-red-600 hover:scale-125 transition" onClick={() => unban(ban.minecraft)}>Débannir</button></td>
                                     </tr>
                                 ))}
                             </>

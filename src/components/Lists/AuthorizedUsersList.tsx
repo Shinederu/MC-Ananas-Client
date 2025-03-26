@@ -1,11 +1,11 @@
 import { AuthContext } from "@/shared/context/AuthContext";
 import { ModalContext } from "@/shared/context/ModalContext";
 import { useHttpClient } from "@/shared/hooks/http-hook";
-import { UserType } from "@/types/User";
+import { MinecraftUserType } from "@/types/User";
 import { useContext } from "react";
 
 type AuthorizedUsersListProps = {
-    userList: UserType[];
+    userList: MinecraftUserType[];
     refreshList: () => void;
 }
 const AuthorizedUsersList = (props: AuthorizedUsersListProps) => {
@@ -14,14 +14,15 @@ const AuthorizedUsersList = (props: AuthorizedUsersListProps) => {
     const modalCtx = useContext(ModalContext);
     const authCtx = useContext(AuthContext);
 
-    const ban = (user: UserType) => {
-        const confirmBan = confirm("Êtes-vous sûr de vouloir bannir" + user.minecraft?.pseudo + "?");
+    const ban = (minecraftUser: MinecraftUserType) => {
+        const confirmBan = prompt("Pourquoi vouloir bannir " + minecraftUser.pseudo + " ?");
         if (confirmBan) {
             const sendMinecraftBan = async () => {
                 await sendRequest({
                     key: 4,
-                    url: import.meta.env.VITE_PLAY_API_URL + '/users/minecraft/' + user.minecraft?.id + '/ban',
+                    url: import.meta.env.VITE_PLAY_API_URL + '/users/minecraft/' + minecraftUser.id + '/ban',
                     method: 'POST',
+                    body: { reason: confirmBan },
                     headers: { Authorization: authCtx.token },
                     onSuccess: (data) => {
                         modalCtx.setMessage(data.message);
@@ -40,20 +41,20 @@ const AuthorizedUsersList = (props: AuthorizedUsersListProps) => {
         }
     }
 
-    const promote = (user: UserType) => {
-        const confirmPromote = confirm("Êtes-vous sûr de vouloir rendre admin " + user.minecraft?.pseudo + " ?");
+    const promote = (minecraftUser: MinecraftUserType) => {
+        const confirmPromote = confirm("Êtes-vous sûr de vouloir rendre admin " + minecraftUser.pseudo + " ?");
         if (confirmPromote) {
             const sendMinecraftPromote = async () => {
                 await sendRequest({
                     key: 4,
-                    url: import.meta.env.VITE_PLAY_API_URL + '/users/minecraft/' + user.minecraft?.id + '/promote',
+                    url: import.meta.env.VITE_PLAY_API_URL + '/users/' + minecraftUser.user.id + '/promote',
                     method: 'POST',
                     headers: { Authorization: authCtx.token },
                     onSuccess: (data) => {
                         modalCtx.setMessage(data.message);
                         modalCtx.setType("confirm");
                         modalCtx.setIsOpen(true);
-                        props.refreshList;
+                        props.refreshList();
                     },
                     onError: (error) => {
                         modalCtx.setMessage(error);
@@ -63,6 +64,32 @@ const AuthorizedUsersList = (props: AuthorizedUsersListProps) => {
                 });
             };
             sendMinecraftPromote();
+        }
+    }
+
+    const retrograde = (minecraftUser: MinecraftUserType) => {
+        const confirmRetrograde = confirm("Êtes-vous sûr de vouloir rétrograder " + minecraftUser.pseudo + " ?");
+        if (confirmRetrograde) {
+            const sendRetrograde = async () => {
+                await sendRequest({
+                    key: 4,
+                    url: import.meta.env.VITE_PLAY_API_URL + '/users/' + minecraftUser.user.id + '/demote',
+                    method: 'POST',
+                    headers: { Authorization: authCtx.token },
+                    onSuccess: (data) => {
+                        modalCtx.setMessage(data.message);
+                        modalCtx.setType("confirm");
+                        modalCtx.setIsOpen(true);
+                        props.refreshList();
+                    },
+                    onError: (error) => {
+                        modalCtx.setMessage(error);
+                        modalCtx.setType("error");
+                        modalCtx.setIsOpen(true);
+                    },
+                });
+            };
+            sendRetrograde();
         }
     }
 
@@ -82,6 +109,8 @@ const AuthorizedUsersList = (props: AuthorizedUsersListProps) => {
                             <th className="px-4 py-2 text-center">Rang</th>
                             {authCtx.role == "ROLE_FRIEND" || authCtx.role == "ROLE_ADMIN" ?
                                 <>
+                                    <th className="px-4 py-2 text-center">Garant</th>
+                                    <th className="px-4 py-2 text-center">Accepté par</th>
                                     <th className="px-4 py-2 text-center">Actions</th>
                                 </>
                                 :
@@ -90,20 +119,22 @@ const AuthorizedUsersList = (props: AuthorizedUsersListProps) => {
                             }
 
                         </tr>
-                        {props.userList ?
+                        {props.userList[0] ?
                             <>
-                                {props.userList.map((user) => (
+                                {props.userList.map((minecraftUser) => (
                                     <tr
-                                        key={user.id}
+                                        key={minecraftUser.id}
                                         className="border-b hover:bg-blue-100 transition-colors hover:text-black"
                                     >
-                                        <td className="px-4 py-2">{user.username}</td>
-                                        <td className="px-4 py-2">{user.minecraft?.pseudo}</td>
-                                        <td className="px-4 py-2">{user.securityRank?.rolename}</td>
+                                        <td className="px-4 py-2">{minecraftUser.pseudo}</td>
+                                        <td className="px-4 py-2">{minecraftUser.user.username}</td>
+                                        <td className="px-4 py-2">{minecraftUser.user.securityRank?.rolename}</td>
                                         {authCtx.role == "ROLE_FRIEND" || authCtx.role == "ROLE_ADMIN" ?
                                             <>
+                                                <td className="px-4 py-2">{minecraftUser.garant?.pseudo}</td>
+                                                <td className="px-4 py-2">{minecraftUser.verifyBy?.username}</td>
                                                 <td className="flex justify-center px-4 py-2 gap-2">
-                                                    <button className="b-2 border px-2 font-bold bg-red-600 hover:scale-125 transition" onClick={() => ban(user)}>Bannir</button>/<button className="b-2 border px-2 font-bold bg-sky-500 hover:scale-125 transition" onClick={() => promote(user)}>Promotion</button>
+                                                    <button className="b-2 border px-2 font-bold bg-red-600 hover:scale-125 transition" onClick={() => ban(minecraftUser)}>Bannir</button>/<button className="b-2 border px-2 font-bold bg-sky-500 hover:scale-125 transition" onClick={() => promote(minecraftUser)}>Promotion</button> / <button className="b-2 border px-2 font-bold bg-success-500 hover:scale-125 transition" onClick={() => retrograde(minecraftUser)}>Rétrogadation</button>
                                                 </td>
                                             </>
                                             :

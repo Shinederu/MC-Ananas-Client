@@ -1,10 +1,11 @@
 import AuthorizedUsersList from "@/components/Lists/AuthorizedUsersList";
 import BannedUsersList from "@/components/Lists/BannedUsersList";
+import CurrentChildList from "@/components/Lists/CurrentChildList";
 import PendingUserList from "@/components/Lists/PendingUserList";
 import { AuthContext } from "@/shared/context/AuthContext";
 import { ModalContext } from "@/shared/context/ModalContext";
 import { useHttpClient } from "@/shared/hooks/http-hook";
-import { UserType } from "@/types/User";
+import { BanType, MinecraftUserType, UserType } from "@/types/User";
 import { useContext, useEffect, useState } from "react";
 
 
@@ -14,10 +15,11 @@ const Users = () => {
     const authCtx = useContext(AuthContext);
     const { sendRequest } = useHttpClient();
 
+    const [childsResquest, setChildsResquest] = useState<UserType[]>([]);
+    const [currentChild, setCurrentChild] = useState<UserType[]>([]);
+    const [allowedUsers, setAllowedUsers] = useState<MinecraftUserType[]>([]);
+    const [bannedUsers, setBannedUsers] = useState<BanType[]>([]);
 
-    const [allowUsers, setAllowUsers] = useState<UserType[]>([]);
-    const [bannedUsers, setBannedUsers] = useState<UserType[]>([]);
-    const [myGarantedUsers, setMyGarantedUsers] = useState<UserType[]>([]);
 
     const getUsersLists = async () => {
         try {
@@ -28,9 +30,10 @@ const Users = () => {
                 headers: { Authorization: authCtx.token },
                 onSuccess: (data) => {
                     if (data) {
-                        setAllowUsers(data?.minecrafts);
+                        setChildsResquest(data?.userGarant);
+                        setCurrentChild(data?.childs)
+                        setAllowedUsers(data?.minecrafts);
                         setBannedUsers(data?.bans);
-                        setMyGarantedUsers(data?.userGarant);
                     }
                 },
                 onError: (error) => {
@@ -46,32 +49,35 @@ const Users = () => {
 
     useEffect(() => {
         getUsersLists();
+        const interval = setInterval(() => {
+            getUsersLists();
+        }, 5000); //Temps en ms
+
+        return () => clearInterval(interval);
     }, []);
 
     return (
         <>
-            <div className="grid grid-rows-2 gap-4">
-                <div className="flex flex-row gap-4">
-                    <div className="flex-1">
-                        <PendingUserList userList={myGarantedUsers} refreshList={getUsersLists} />
-                    </div>
-
-                    <div className="flex-1">
-                        <AuthorizedUsersList userList={allowUsers} refreshList={getUsersLists} />
-                    </div>
+            <div className="grid grid-col-2 w-full h-full">
+                <div className="flex flex-row gap-4 w-full h-full">
+                    <PendingUserList userList={childsResquest} refreshList={getUsersLists} />
+                    <CurrentChildList userList={currentChild} refreshList={getUsersLists} />
                 </div>
-                {authCtx.role == "ROLE_FRIEND" || authCtx.role == "ROLE_ADMIN" ?
-                    <>
-                        <div>
-                            <BannedUsersList userList={bannedUsers} refreshList={getUsersLists} />
-                        </div>
-                    </>
-                    :
-                    <>
-                    </>
-                }
+                <div className="flex flex-row gap-4 w-full h-full">
+                    <AuthorizedUsersList userList={allowedUsers} refreshList={getUsersLists} />
+                </div>
 
             </div>
+            {authCtx.role == "ROLE_FRIEND" || authCtx.role == "ROLE_ADMIN" ?
+                <>
+                    <div>
+                        <BannedUsersList banList={bannedUsers} refreshList={getUsersLists} />
+                    </div>
+                </>
+                :
+                <>
+                </>
+            }
         </>
     );
 }

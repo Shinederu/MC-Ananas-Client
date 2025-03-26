@@ -80,9 +80,19 @@ const PendingUserList = (props: PendingUserListProps) => {
                         <tr className="bg-gray-500 text-white">
                             <th className="px-4 py-2 text-center">Minecraft</th>
                             <th className="px-4 py-2 text-center">Discord</th>
+
+                            {authCtx.role == "ROLE_FRIEND" || authCtx.role == "ROLE_ADMIN" ?
+                                <>
+                                    <th className="px-4 py-2 text-center">Garant demandé</th>
+
+                                </>
+                                :
+                                <>
+                                </>
+                            }
                             <th className="px-4 py-2 text-center">Accepter ?</th>
                         </tr>
-                        {props.userList ?
+                        {props.userList[0] ?
                             <>
                                 {props.userList.map((user) => (
                                     <tr
@@ -91,6 +101,14 @@ const PendingUserList = (props: PendingUserListProps) => {
                                     >
                                         <td className="px-4 py-2">{user.minecraft?.pseudo}</td>
                                         <td className="px-4 py-2">{user.username}</td>
+                                        {authCtx.role == "ROLE_FRIEND" || authCtx.role == "ROLE_ADMIN" ?
+                                            <>
+                                                <th className="px-4 py-2 text-center">{user.minecraft?.garant?.pseudo}</th>
+                                            </>
+                                            :
+                                            <>
+                                            </>
+                                        }
                                         <td className="flex justify-center px-4 py-2 gap-2">
                                             <button className="b-2 border px-2 font-bold bg-lime-600 hover:scale-125 transition" onClick={() => accepted(user)}>Oui</button>/<button className="b-2 border px-2 font-bold bg-red-600 hover:scale-125 transition" onClick={() => refused(user)}>Non</button>
                                         </td>
@@ -100,11 +118,12 @@ const PendingUserList = (props: PendingUserListProps) => {
                             :
                             <>
                                 <tr>
-                                    <td colSpan={3} className="text-center py-4">
+                                    <td colSpan={4} className="text-center py-4">
                                         <p className="justify-center">Aucune demande en attente</p>
                                     </td>
                                 </tr>
                             </>
+
                         }
                     </tbody>
                 </table>
