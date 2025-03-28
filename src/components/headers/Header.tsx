@@ -40,8 +40,8 @@ const Header = () => {
                 </div>
 
                 <div className="grid grid-cols-3 items-center w-full px-6 pb-2">
-                    <div></div>
-
+                    <div>
+                    </div>
                     <nav className="justify-self-center">
                         <div className="flex gap-6 text-white font-medium items-center">
                             {authCtx.role === "ROLE_MINECRAFT" || authCtx.role === "ROLE_FRIEND" || authCtx.role === "ROLE_ADMIN" ? (
@@ -50,18 +50,18 @@ const Header = () => {
                                     <span className="text-white/40">|</span>
                                     <Link to="/Users" className="hover:text-white hover:underline transition">Utilisateurs</Link>
                                     <span className="text-white/40">|</span>
+                                    <a href="https://bluemap.play.shinederu.lol" className="hover:text-white hover:underline transition">Bluemap</a>
+                                    <span className="text-white/40">|</span>
                                 </>
                             ) : null}
                             {authCtx.role === "ROLE_USER" || authCtx.role === "ROLE_MINECRAFT" || authCtx.role === "ROLE_FRIEND" || authCtx.role === "ROLE_ADMIN" ? (
                                 <>
-
                                     <Link to="/Profile" className="hover:text-white hover:underline transition">Profil</Link>
                                 </>
                             ) : null}
                             {authCtx.role === "ROLE_ADMIN" ? (
                                 <>
-                                    <span className="text-white/40">|</span>
-                                    <Link to="/Management" className="hover:text-white hover:underline transition">Administration</Link>
+                                    <span className="text-white/40">|</span><Link to="/Management" className="hover:text-white hover:underline transition">Administration</Link>
                                 </>
                             ) : null}
                         </div>
