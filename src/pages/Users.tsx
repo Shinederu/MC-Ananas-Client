@@ -7,7 +7,7 @@ import { ModalContext } from "@/shared/context/ModalContext";
 import { useHttpClient } from "@/shared/hooks/http-hook";
 import { useInterval } from "@/shared/hooks/useInterval";
 import { BanType, MinecraftUserType, UserType } from "@/types/User";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 
 const Users = () => {
@@ -47,6 +47,10 @@ const Users = () => {
             console.error("Erreur lors de la vérification de la connexion :", error);
         }
     };
+
+    useEffect(() => {
+        getUsersLists();
+    }, []);
 
     useInterval(() => {
         getUsersLists();
