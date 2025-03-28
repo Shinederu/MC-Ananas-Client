@@ -87,15 +87,19 @@ const App = () => {
             </>
             :
             <>
-              <div className="bg-[#f7f7f7] font-[Poppins] min-h-screen flex flex-col">
+              <div className="min-h-screen flex flex-col font-[Poppins]">
                 <Header />
-                <main className="w-11/12 mx-auto my-10 p-8 rounded-lg shadow-lg text-center flex-grow">
-                  {isReady ?
-                    <Routes>{getRoutes(authCtx.role)}</Routes>
-                    :
-                    <Title size={1} title="Chargement..." />
-                  }
-                </main>
+
+                <div className="flex-1 flex flex-col">
+                  <main className="w-11/12 mx-auto my-5 p-8 rounded-lg shadow-lg text-center">
+                    {isReady ?
+                      <Routes>{getRoutes(authCtx.role)}</Routes>
+                      :
+                      <Title size={1} title="Chargement..." />
+                    }
+                  </main>
+                </div>
+
                 <Footer />
               </div>
             </>
