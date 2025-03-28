@@ -95,7 +95,7 @@ const AuthorizedUsersList = (props: AuthorizedUsersListProps) => {
 
     return (
         <>
-            <div className="h-full w-full bg-gradient-to-br from-red-400 to-purple-500 p-6 rounded-2xl shadow-lg text-white">
+            <div className="w-full bg-gradient-to-br from-red-400 to-purple-500 p-6 rounded-2xl shadow-lg text-white overflow-x-auto">
 
                 <h1 className="text-3xl font-bold text-center mb-4">Liste des joueurs</h1>
                 <p>Voici tous les joueurs que tu peux rencontrer sur le serveur ! Amusez-vous bien ! </p>
@@ -133,8 +133,8 @@ const AuthorizedUsersList = (props: AuthorizedUsersListProps) => {
                                             <>
                                                 <td className="px-4 py-2">{minecraftUser.garant?.pseudo}</td>
                                                 <td className="px-4 py-2">{minecraftUser.verifyBy?.username}</td>
-                                                <td className="flex justify-center px-4 py-2 gap-2">
-                                                    <button className="b-2 border px-2 font-bold bg-red-600 hover:scale-125 transition" onClick={() => ban(minecraftUser)}>Bannir</button>/<button className="b-2 border px-2 font-bold bg-sky-500 hover:scale-125 transition" onClick={() => promote(minecraftUser)}>Promotion</button> / <button className="b-2 border px-2 font-bold bg-success-500 hover:scale-125 transition" onClick={() => retrograde(minecraftUser)}>Rétrogadation</button>
+                                                <td className="justify-center px-4 py-2 gap-2 flex flex-col">
+                                                    <button className="b-2 border px-2 font-bold bg-red-600 hover:scale-125 transition" onClick={() => ban(minecraftUser)}>Bannir</button><button className="b-2 border px-2 font-bold bg-sky-500 hover:scale-125 transition" onClick={() => promote(minecraftUser)}>Promotion</button><button className="b-2 border px-2 font-bold bg-success-500 hover:scale-125 transition" onClick={() => retrograde(minecraftUser)}>Rétrogadation</button>
                                                 </td>
                                             </>
                                             :

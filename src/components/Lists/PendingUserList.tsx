@@ -48,7 +48,7 @@ const PendingUserList = (props: PendingUserListProps) => {
                 await sendRequest({
                     key: 4,
                     url: import.meta.env.VITE_PLAY_API_URL + '/users/minecraft/' + user.minecraft?.id + '/garant-refused',
-                    method: 'DELETE',
+                    method: 'POST',
                     headers: { Authorization: authCtx.token },
                     onSuccess: (data) => {
                         modalCtx.setMessage(data.message);
@@ -70,12 +70,12 @@ const PendingUserList = (props: PendingUserListProps) => {
 
     return (
         <>
-            <div className="w-full bg-gradient-to-br from-blue-600 to-fuchsia-500 p-6 rounded-2xl shadow-lg text-white">
+            <div className="bg-gradient-to-br from-blue-600 to-fuchsia-500 p-6 rounded-2xl shadow-lg text-white overflow-x-auto">
                 <h1 className="text-3xl font-bold text-center mb-4">Invitez vos amis !</h1>
                 <p>Vous pouvez inviter d'autres joueurs de confiance a rejoindre le serveur et vous porter garant pour eux.</p>
                 <p className="bg-red-800 m-2 border-white border-2 font-semibold p-2">En cliquant sur "<u>oui</u>" pour les utilisateurs ci-dessous, vous vous portez garant(e) et accepter le risque d'être sanctionné(e) si votre invité(e) porte préjudice au serveur ou à ces membres.</p>
 
-                <table className="rounded-lg w-full">
+                <table className="rounded-lg w-full overflow-x-auto">
                     <tbody>
                         <tr className="bg-gray-500 text-white">
                             <th className="px-4 py-2 text-center">Minecraft</th>

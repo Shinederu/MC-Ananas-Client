@@ -2,6 +2,7 @@ import MinecraftSkinCard from "@/components/cards/MInecraftSkinCard";
 import { AuthContext } from "@/shared/context/AuthContext";
 import { ModalContext } from "@/shared/context/ModalContext";
 import { useHttpClient } from "@/shared/hooks/http-hook";
+import { useInterval } from "@/shared/hooks/useInterval";
 import { MinecraftUserType, UserType } from "@/types/User";
 import { useContext, useEffect, useState } from "react";
 
@@ -11,11 +12,10 @@ const Profile = () => {
     const modalCtx = useContext(ModalContext);
     const authCtx = useContext(AuthContext);
 
-
-
     const [userDetails, setUserDetails] = useState<UserType>();
     const [listGarants, setListGarants] = useState<MinecraftUserType[]>();
     const [selectedGarant, setSelectedGarant] = useState<number>(0);
+    const [showGarantList, setShowGarantList] = useState<boolean>(false);
 
 
     const sendGetProfile = async () => {
@@ -36,12 +36,13 @@ const Profile = () => {
         });
     };
 
-
-
     useEffect(() => {
         sendGetProfile();
     }, []);
 
+    useInterval(() => {
+        sendGetProfile();
+    }, 5000);
 
 
     const handleMinecraftAdd = () => {
@@ -151,6 +152,31 @@ const Profile = () => {
         }
     };
 
+    const HandleGarantChange = () => {
+        const sendGarantChange = async () => {
+            await sendRequest({
+                key: 3,
+                url: import.meta.env.VITE_PLAY_API_URL + '/profil/garant/' + userDetails?.minecraft?.id + '/update',
+                method: 'POST',
+                headers: { Authorization: authCtx.token },
+                body: { garant_id: selectedGarant },
+                onSuccess: (data) => {
+                    modalCtx.setMessage(data.message);
+                    modalCtx.setType("info");
+                    modalCtx.setIsOpen(true);
+                    sendGetProfile();
+                },
+                onError: (error) => {
+                    modalCtx.setMessage(error);
+                    modalCtx.setType("error");
+                    modalCtx.setIsOpen(true);
+                },
+            });
+        };
+        sendGarantChange();
+        setShowGarantList(false);
+    }
+
     return (
         <>
             <div className="grid grid-cols-3 gap-4">
@@ -200,27 +226,149 @@ const Profile = () => {
                                 className="w-3/5 px-3 py-2 border rounded-md bg-gray-100  text-gray-900 text-center"
                             />
                         </div>
-                        {userDetails?.minecraft ?
+                        {(userDetails?.minecraft) ?
                             <>
+                                {(userDetails.minecraft.garant != null && userDetails.securityRank?.role[0] == "ROLE_USER") ?
+                                    <> {/*Waiting*/}
+                                        <div>
+                                            <label className="block text-gray-100">Votre garant</label>
+                                            <div className="w-full flex  justify-center">
+                                                {showGarantList ?
+                                                    <>
+                                                        <div className=" w-3/5 flex flex-row gap-4">
+                                                            <select
+                                                                value={selectedGarant}
+                                                                onChange={(e) => setSelectedGarant(Number(e.target.value))}
+                                                                className="w-full px-3 py-2 border rounded-md bg-gray-100 text-gray-900 text-center"
+                                                            >
+                                                                <option value="">-- Sélectionner un garant --</option>
+                                                                {listGarants?.map((minecraftUser) => (
+                                                                    <option key={minecraftUser.id} value={minecraftUser.id}>{minecraftUser.pseudo}</option>
+                                                                ))}
+                                                            </select>
+                                                            <button onClick={() => HandleGarantChange()}>Enregistrer</button>
+                                                            <button onClick={() => { setShowGarantList(false) }}>Annuler</button>
+                                                        </div>
+                                                    </>
+                                                    :
+                                                    <>
+                                                        <div className=" w-3/5 flex flex-row gap-4">
+                                                            <input
+                                                                type="text"
+                                                                value={userDetails?.minecraft?.garant?.pseudo}
+                                                                disabled
+                                                                className="w-full px-3 py-2 border rounded-md bg-gray-100  text-gray-900 text-center"
+                                                            />
+                                                            <button onClick={() => setShowGarantList(true)}>Modifier</button>
+                                                        </div>
+                                                    </>
+                                                }
+                                            </div>
+                                        </div>
+                                    </>
 
-                                <div>
-                                    <label className="block text-gray-100">Votre garant</label>
-                                    <input
-                                        type="text"
-                                        value={userDetails?.minecraft?.garant?.pseudo}
-                                        disabled
-                                        className="w-3/5 px-3 py-2 border rounded-md bg-gray-100  text-gray-900 text-center"
-                                    />
-                                </div>
+                                    :
+                                    <>
+                                        {(userDetails.minecraft.garant == null && userDetails.securityRank?.role[0] == "ROLE_USER") ?
+                                            <> {/*Exclude*/}
+                                                <label className="block text-gray-100">Garants disponibles</label>
+                                                <div className="w-full flex justify-center">
+                                                    <div className="flex flex-row w-3/5 gap-4 justify-center ">
+                                                        <select
+                                                            value={selectedGarant}
+                                                            onChange={(e) => setSelectedGarant(Number(e.target.value))}
+                                                            className="w-full px-3 py-2 border rounded-md bg-gray-100 text-gray-900 text-center"
+                                                        >
+                                                            <option value="">-- Sélectionner un garant --</option>
+                                                            {listGarants?.map((minecraftUser) => (
+                                                                <option key={minecraftUser.id} value={minecraftUser.id}>{minecraftUser.pseudo}</option>
+                                                            ))}
+                                                        </select>
+                                                        <button onClick={() => HandleGarantChange()}>Enregistrer</button>
+                                                    </div>
+                                                </div>
+
+
+                                                <div className="w-full flex  justify-center">
+                                                    <div className=" w-3/5 bg-slate-800 m-2 border-red-900 border-2 p-2">
+                                                        <h1 className="font-semibold text-2xl">Vous avez été exclu/refusé</h1>
+                                                        <p className="text-left">
+                                                            Votre demande de garant a été refusée ou votre garant vous a retiré son autorisation.
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+
+                                            </>
+                                            :
+                                            <>  {/*Player*/}
+                                                <div>
+                                                    <label className="block text-gray-100">Votre garant</label>
+                                                    <div className="w-full flex  justify-center">
+                                                        {showGarantList ?
+                                                            <>
+
+                                                                <div className="flex flex-row w-3/5 gap-4 justify-center ">
+                                                                    <select
+                                                                        value={selectedGarant}
+                                                                        onChange={(e) => setSelectedGarant(Number(e.target.value))}
+                                                                        className="w-full px-3 py-2 border rounded-md bg-gray-100 text-gray-900 text-center"
+                                                                    >
+                                                                        <option value="">-- Sélectionner un garant --</option>
+                                                                        {listGarants?.map((minecraftUser) => (
+                                                                            <option key={minecraftUser.id} value={minecraftUser.id}>{minecraftUser.pseudo}</option>
+                                                                        ))}
+                                                                    </select>
+                                                                    <button onClick={() => HandleGarantChange()}>Enregistrer</button>
+                                                                    <button onClick={() => { setShowGarantList(false) }}>Annuler</button>
+                                                                </div>
+
+                                                            </>
+                                                            :
+                                                            <>
+                                                                <div className="flex flex-row w-3/5 gap-4 justify-center ">
+                                                                    <input
+                                                                        type="text"
+                                                                        value={userDetails?.minecraft?.garant?.pseudo}
+                                                                        disabled
+                                                                        className="w-full px-3 py-2 border rounded-md bg-gray-100  text-gray-900 text-center"
+                                                                    />
+                                                                    <button onClick={() => setShowGarantList(true)}>Modifier</button>
+                                                                </div>
+                                                            </>
+                                                        }
+
+                                                    </div>
+                                                    {showGarantList ?
+                                                        <>
+                                                            <div className="w-full flex  justify-center">
+                                                                <div className="w-3/5 bg-slate-800 m-2 border-red-900 border-2 p-2">
+                                                                    <h1 className="font-semibold text-2xl">ATTENTION !</h1>
+                                                                    <p className="text-left">
+                                                                        Si vous demandez a modifier votre garant, vous devrez attendre son approbation pour pouvoir continuer a accéder au serveur ainsi qu'a ses ressources.
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                        </>
+                                                        :
+                                                        <>
+                                                        </>
+                                                    }
+                                                </div>
+                                            </>
+
+                                        }
+                                    </>
+                                }
                             </>
                             :
-                            <>
+                            <>  {/*New*/}
                                 <div>
                                     <label className="block text-gray-100">Garants disponibles</label>
                                     <select
                                         value={selectedGarant}
                                         onChange={(e) => setSelectedGarant(Number(e.target.value))}
-                                        className="w-3/5 px-3 py-2 border rounded-md bg-gray-100 text-gray-900 text-center"
+                                        className="w-3/5 px-3 py-2 border rounded-md bg-gray-100 text-gray-900 text-center "
                                     >
                                         <option value="">-- Sélectionner un garant --</option>
                                         {listGarants?.map((minecraftUser) => (
@@ -230,9 +378,7 @@ const Profile = () => {
                                 </div>
                             </>
                         }
-
-                        <div className="mt-6 mb-4 flex gap-4 justify-center">
-
+                        <div className="mt-6 mb-4 flex gap-4 justify-center w-full">
                             {userDetails?.minecraft ?
                                 <>
                                     <button
@@ -288,11 +434,9 @@ const Profile = () => {
                                 </p>
                             </div>
                         }
-
-
                     </div>
                 </div>
-            </div>
+            </div >
         </>
     );
 };

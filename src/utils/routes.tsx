@@ -3,8 +3,8 @@ import Login from "@/pages/Login";
 import { Navigate, Route } from "react-router-dom";
 import Users from "@/pages/Users";
 import Profile from "@/pages/Profile";
-import Modspacks from "@/pages/Modspacks";
 import Banned from "@/pages/Banned";
+import Management from "@/pages/Management";
 
 
 //Routes autorisées pour les anonymes
@@ -49,7 +49,7 @@ const admin = () => (
     <>
         {minecraft()}
         <Route path="/Banned" element={<Banned />} />
-        <Route path="/Modpack" element={<Modspacks />} />
+        <Route path="/Management" element={<Management />} />
     </>
 )
 

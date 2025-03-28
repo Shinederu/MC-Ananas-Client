@@ -49,18 +49,19 @@ const Header = () => {
                                     <Link to="/Server" className="hover:text-white hover:underline transition">Serveur</Link>
                                     <span className="text-white/40">|</span>
                                     <Link to="/Users" className="hover:text-white hover:underline transition">Utilisateurs</Link>
+                                    <span className="text-white/40">|</span>
                                 </>
                             ) : null}
                             {authCtx.role === "ROLE_USER" || authCtx.role === "ROLE_MINECRAFT" || authCtx.role === "ROLE_FRIEND" || authCtx.role === "ROLE_ADMIN" ? (
                                 <>
-                                    <span className="text-white/40">|</span>
+
                                     <Link to="/Profile" className="hover:text-white hover:underline transition">Profil</Link>
                                 </>
                             ) : null}
                             {authCtx.role === "ROLE_ADMIN" ? (
                                 <>
                                     <span className="text-white/40">|</span>
-                                    <Link to="/Modpack" className="hover:text-white hover:underline transition">Modpack</Link>
+                                    <Link to="/Management" className="hover:text-white hover:underline transition">Administration</Link>
                                 </>
                             ) : null}
                         </div>

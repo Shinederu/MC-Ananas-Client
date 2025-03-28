@@ -5,8 +5,9 @@ import PendingUserList from "@/components/Lists/PendingUserList";
 import { AuthContext } from "@/shared/context/AuthContext";
 import { ModalContext } from "@/shared/context/ModalContext";
 import { useHttpClient } from "@/shared/hooks/http-hook";
+import { useInterval } from "@/shared/hooks/useInterval";
 import { BanType, MinecraftUserType, UserType } from "@/types/User";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 
 
 const Users = () => {
@@ -16,7 +17,7 @@ const Users = () => {
     const { sendRequest } = useHttpClient();
 
     const [childsResquest, setChildsResquest] = useState<UserType[]>([]);
-    const [currentChild, setCurrentChild] = useState<UserType[]>([]);
+    const [currentChild, setCurrentChild] = useState<MinecraftUserType[]>([]);
     const [allowedUsers, setAllowedUsers] = useState<MinecraftUserType[]>([]);
     const [bannedUsers, setBannedUsers] = useState<BanType[]>([]);
 
@@ -31,7 +32,7 @@ const Users = () => {
                 onSuccess: (data) => {
                     if (data) {
                         setChildsResquest(data?.userGarant);
-                        setCurrentChild(data?.childs)
+                        setCurrentChild(data?.children)
                         setAllowedUsers(data?.minecrafts);
                         setBannedUsers(data?.bans);
                     }
@@ -47,27 +48,24 @@ const Users = () => {
         }
     };
 
-    useEffect(() => {
+    useInterval(() => {
         getUsersLists();
-        const interval = setInterval(() => {
-            getUsersLists();
-        }, 5000); //Temps en ms
+    }, 5000);
 
-        return () => clearInterval(interval);
-    }, []);
 
     return (
         <>
-            <div className="grid grid-col-2 w-full h-full">
-                <div className="flex flex-row gap-4 w-full h-full">
+            <div className="grid grid-cols-2 w-full h-full p-4 gap-4 items-stretch">
+                <div className="flex flex-col gap-4 w-full h-full">
                     <PendingUserList userList={childsResquest} refreshList={getUsersLists} />
                     <CurrentChildList userList={currentChild} refreshList={getUsersLists} />
                 </div>
-                <div className="flex flex-row gap-4 w-full h-full">
+
+                <div className="flex flex-col gap-4 w-full h-full">
                     <AuthorizedUsersList userList={allowedUsers} refreshList={getUsersLists} />
                 </div>
-
             </div>
+
             {authCtx.role == "ROLE_FRIEND" || authCtx.role == "ROLE_ADMIN" ?
                 <>
                     <div>

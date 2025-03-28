@@ -8,6 +8,7 @@ import { ModalContext } from "./shared/context/ModalContext";
 import Title from "./components/decoration/Title";
 import Header from "./components/headers/Header";
 import Banned from "./pages/Banned";
+import { useInterval } from "./shared/hooks/useInterval";
 
 const App = () => {
 
@@ -17,8 +18,6 @@ const App = () => {
   const [isReady, setIsReady] = useState<Boolean>(false);
   let navigate = useNavigate();
   const loc = useLocation();
-
-
 
   useEffect(() => {
     const sendIsConnected = async () => {
@@ -56,7 +55,10 @@ const App = () => {
       onSuccess: (data) => {
         if (data.Role[0].trim() != authCtx.role) {
           authCtx.setAuthData({
+            isLoggedIn: true,
+            token: "Bearer " + data.Token,
             role: data.Role[0].trim(),
+            username: data.Username,
           });
         }
       },
@@ -69,15 +71,10 @@ const App = () => {
 
   };
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (authCtx.isLoggedIn) {
-        sendRefreshRole();
-      }
-    }, 5000); //Temps en ms
+  useInterval(() => {
+    if (authCtx.isLoggedIn) sendRefreshRole();
+  }, 5000);
 
-    return () => clearInterval(interval);
-  }, []);
 
 
   return (

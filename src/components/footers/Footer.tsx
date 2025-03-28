@@ -7,7 +7,7 @@ const Footer = () => {
         Version : {import.meta.env.VITE_SHINEDERU_VERSION}
       </div>
       <p>
-        &copy; 2025 <a href="https://shinederu.lol" target="_blank" rel="noopener noreferrer" className="hover:underline">Play.Shinederu.lol</a> - Tous droits réservés
+        &copy; 2025 <a href="https://shinederu.lol" target="_blank" rel="noopener noreferrer" className="hover:underline">Play.Shinederu.lol & Silversat</a> - Tous droits réservés
       </p>
     </footer>
   );

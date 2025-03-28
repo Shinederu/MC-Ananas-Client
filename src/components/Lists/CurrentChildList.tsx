@@ -1,10 +1,10 @@
 import { AuthContext } from "@/shared/context/AuthContext";
 import { ModalContext } from "@/shared/context/ModalContext";
 import { useHttpClient } from "@/shared/hooks/http-hook";
-import { UserType } from "@/types/User";
+import { MinecraftUserType } from "@/types/User";
 import { useContext } from "react";
 type CurrentChildListProps = {
-    userList: UserType[];
+    userList: MinecraftUserType[];
     refreshList: () => void;
 }
 const CurrentChildList = (props: CurrentChildListProps) => {
@@ -14,13 +14,13 @@ const CurrentChildList = (props: CurrentChildListProps) => {
     const modalCtx = useContext(ModalContext);
     const authCtx = useContext(AuthContext);
 
-    const cancel = (user: UserType) => {
-        const confirmCanceled = confirm("Voulez-vous vraiment arrêter de vous porter garant pour " + user.minecraft?.pseudo + " ? Il perdra l'accès au serveur et devrat ré-effectuer une demande de garant.");
+    const cancel = (user: MinecraftUserType) => {
+        const confirmCanceled = confirm("Voulez-vous vraiment arrêter de vous porter garant pour " + user.pseudo + " ? Il perdra l'accès au serveur et devrat ré-effectuer une demande de garant.");
         if (confirmCanceled) {
             const sendCanceled = async () => {
                 await sendRequest({
                     key: 4,
-                    url: import.meta.env.VITE_PLAY_API_URL + '/users/minecraft/' + user.minecraft?.id + '/remove-child',
+                    url: import.meta.env.VITE_PLAY_API_URL + '/users/minecraft/' + user.id + '/remove-child',
                     method: 'POST',
                     headers: { Authorization: authCtx.token },
                     onSuccess: (data) => {
@@ -53,7 +53,7 @@ const CurrentChildList = (props: CurrentChildListProps) => {
 
                             {authCtx.role == "ROLE_FRIEND" || authCtx.role == "ROLE_ADMIN" ?
                                 <>
-                                    <th className="px-4 py-2 text-center">Garant demandé</th>
+                                    <th className="px-4 py-2 text-center">Garant lié</th>
 
                                 </>
                                 :
@@ -66,24 +66,24 @@ const CurrentChildList = (props: CurrentChildListProps) => {
                         </tr>
                         {props.userList[0] ?
                             <>
-                                {props.userList.map((user) => (
+                                {props.userList.map((minecraftUser) => (
                                     <tr
-                                        key={user.id}
+                                        key={minecraftUser.id}
                                         className="border-b transition-colors"
                                     >
-                                        <td className="px-4 py-2">{user.minecraft?.pseudo}</td>
-                                        <td className="px-4 py-2">{user.username}</td>
+                                        <td className="px-4 py-2">{minecraftUser.pseudo}</td>
+                                        <td className="px-4 py-2">{minecraftUser.user.username}</td>
                                         {authCtx.role == "ROLE_FRIEND" || authCtx.role == "ROLE_ADMIN" ?
                                             <>
-                                                <th className="px-4 py-2 text-center">{user.minecraft?.garant?.pseudo}</th>
+                                                <th className="px-4 py-2 text-center">{minecraftUser.garant?.pseudo}</th>
                                             </>
                                             :
                                             <>
                                             </>
                                         }
-                                        <td className="px-4 py-2">{user.minecraft?.verifyBy?.username}</td>
+                                        <td className="px-4 py-2">{minecraftUser.verifyBy?.username}</td>
                                         <td className="flex justify-center px-4 py-2 gap-2">
-                                            <button className="b-2 border px-2 font-bold bg-red-600 hover:scale-125 transition" onClick={() => cancel(user)}>Retirer l'accès</button>
+                                            <button className="b-2 border px-2 font-bold bg-red-600 hover:scale-125 transition" onClick={() => cancel(minecraftUser)}>Retirer l'accès</button>
                                         </td>
                                     </tr>
                                 ))}

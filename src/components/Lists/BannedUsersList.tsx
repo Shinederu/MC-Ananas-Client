@@ -43,7 +43,7 @@ const BannedUsersList = (props: BannedUsersListProps) => {
 
     return (
         <>
-            <div className="w-full bg-gradient-to-br from-green-600 to-cyan-400 p-6 rounded-2xl shadow-lg text-white">
+            <div className="w-full bg-gradient-to-br from-green-600 to-cyan-400 p-6 rounded-2xl shadow-lg text-white overflow-x-auto">
                 <h1 className="text-3xl font-bold text-center mb-4">Joueurs bannis</h1>
                 <p>Certains utilisateurs n'ont pas été très appréciable sur le serveur et se sont retrouvé avec leurs comptes définitivement bannis. Il se peut que la personnes qui se soit également portée garante pour eux aie également subis une "pénalité" en fonction de la gravité des actes effectués.</p>
                 <table className="rounded-lg w-full mt-4">
@@ -73,7 +73,7 @@ const BannedUsersList = (props: BannedUsersListProps) => {
                             :
                             <>
                                 <tr>
-                                    <td colSpan={4} className="text-center py-4">
+                                    <td colSpan={5} className="text-center py-4">
                                         <p className="justify-center">Aucune personne bannie...</p>
                                     </td>
                                 </tr>
