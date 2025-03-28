@@ -1,7 +1,7 @@
 import { AuthContext } from "@/shared/context/AuthContext";
 import { ModalContext } from "@/shared/context/ModalContext";
 import { useHttpClient } from "@/shared/hooks/http-hook";
-import { ModpackType } from "@/types/Modspack";
+import { ModpackType } from "@/types/Modpack";
 import { DateTimeFormatter } from "@/utils/DateTimeFormatter";
 import { FolderArchive } from "lucide-react";
 import { useContext, useEffect, useState } from "react";

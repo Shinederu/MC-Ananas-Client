@@ -1,11 +1,11 @@
 import { AuthContext } from "@/shared/context/AuthContext";
 import { ModalContext } from "@/shared/context/ModalContext";
 import { useHttpClient } from "@/shared/hooks/http-hook";
-import { ModpackType } from "@/types/Modspack";
+import { ModpackType } from "@/types/Modpack";
 import { FolderArchive } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
 
-const ModspackInfosCard = () => {
+const ModpackInfosCard = () => {
 
     const { sendRequest } = useHttpClient();
     const modalCtx = useContext(ModalContext);
@@ -91,7 +91,7 @@ const ModspackInfosCard = () => {
 
     return (
         <div className="h-full bg-gradient-to-br from-red-400 to-purple-500 p-6 rounded-2xl shadow-lg text-white">
-            <h1 className="text-3xl font-bold mb-6">Modpack</h1>
+            <h1 className="text-3xl font-bold mb-6">Gestion des infos Modpack</h1>
 
             <div className="space-y-4">
                 <input
@@ -143,4 +143,4 @@ const ModspackInfosCard = () => {
     );
 };
 
-export default ModspackInfosCard;
+export default ModpackInfosCard;

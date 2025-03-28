@@ -1,4 +1,5 @@
 import EditModspackInfosCard from "@/components/cards/EditModspackInfosCard";
+import ManageMinecraftAccounts from "@/components/Lists/ManageMinecraftAccounts";
 
 const Management = () => {
     return (
@@ -10,7 +11,7 @@ const Management = () => {
                     <EditModspackInfosCard />
                 </div>
                 <div className="flex flex-col gap-4 w-full h-full">
-                    {/* Futur Contenu */}
+                    <ManageMinecraftAccounts />
                 </div>
             </div>
 
