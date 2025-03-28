@@ -94,42 +94,58 @@ const ModpackInfosCard = () => {
             <h1 className="text-3xl font-bold mb-6">Gestion des infos Modpack</h1>
 
             <div className="space-y-4">
-                <input
-                    type="text"
-                    placeholder="Nom du modpack"
-                    value={modpack?.name}
-                    onChange={(e) => handleChange("name", e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg text-black"
-                />
+                <div>
+                    <label htmlFor="name" className="block mb-1 font-semibold">Nom du modpack</label>
+                    <input
+                        id="name"
+                        type="text"
+                        placeholder="Nom du modpack"
+                        value={modpack?.name}
+                        onChange={(e) => handleChange("name", e.target.value)}
+                        className="w-full px-3 py-2 rounded-lg text-black"
+                    />
+                </div>
 
-                <select
-                    value={modpack?.version}
-                    onChange={(e) => handleChange("version", e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg text-black"
-                >
-                    <option value="">Sélectionne une version Minecraft</option>
-                    {mcVersionList.map((version) => (
-                        <option key={version} value={version}>
-                            {version}
-                        </option>
-                    ))}
-                </select>
+                <div>
+                    <label htmlFor="version" className="block mb-1 font-semibold">Version Minecraft</label>
+                    <select
+                        id="version"
+                        value={modpack?.version}
+                        onChange={(e) => handleChange("version", e.target.value)}
+                        className="w-full px-3 py-2 rounded-lg text-black"
+                    >
+                        <option value="">Sélectionne une version Minecraft</option>
+                        {mcVersionList.map((version) => (
+                            <option key={version} value={version}>
+                                {version}
+                            </option>
+                        ))}
+                    </select>
+                </div>
 
-                <input
-                    type="text"
-                    placeholder="Mod Loader (ex: Forge, Fabric)"
-                    value={modpack?.modLoader}
-                    onChange={(e) => handleChange("modLoader", e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg text-black"
-                />
+                <div>
+                    <label htmlFor="modLoader" className="block mb-1 font-semibold">Mod Loader</label>
+                    <input
+                        id="modLoader"
+                        type="text"
+                        placeholder="Mod Loader (ex: Forge, Fabric)"
+                        value={modpack?.modLoader}
+                        onChange={(e) => handleChange("modLoader", e.target.value)}
+                        className="w-full px-3 py-2 rounded-lg text-black"
+                    />
+                </div>
 
-                <input
-                    type="url"
-                    placeholder="Lien de téléchargement"
-                    value={modpack?.link}
-                    onChange={(e) => handleChange("link", e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg text-black"
-                />
+                <div>
+                    <label htmlFor="link" className="block mb-1 font-semibold">Lien de téléchargement</label>
+                    <input
+                        id="link"
+                        type="url"
+                        placeholder="Lien de téléchargement"
+                        value={modpack?.link}
+                        onChange={(e) => handleChange("link", e.target.value)}
+                        className="w-full px-3 py-2 rounded-lg text-black"
+                    />
+                </div>
 
                 <button
                     onClick={() => onSave()}

@@ -1,4 +1,4 @@
-import EditModspackInfosCard from "@/components/cards/EditModspackInfosCard";
+import EditModpackInfosCard from "@/components/cards/EditModpackInfosCard";
 import ManageMinecraftAccounts from "@/components/Lists/ManageMinecraftAccounts";
 
 const Management = () => {
@@ -8,7 +8,7 @@ const Management = () => {
 
             <div className="grid grid-cols-2 w-full h-full p-4 gap-4 items-stretch">
                 <div className="flex flex-col gap-4 w-full h-full">
-                    <EditModspackInfosCard />
+                    <EditModpackInfosCard />
                 </div>
                 <div className="flex flex-col gap-4 w-full h-full">
                     <ManageMinecraftAccounts />
