@@ -1,5 +1,7 @@
 export function DateTimeFormatter(dateString: string): string {
     const date = new Date(dateString);
+
+    if(dateString == '') return '';
   
     const options: Intl.DateTimeFormatOptions = {
       day: '2-digit',

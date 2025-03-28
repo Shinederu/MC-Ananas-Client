@@ -1,8 +1,9 @@
 export type ModpackType = {
-    nom: string;
-    date: string;
-    minecraftVersion: string;
+    id: number
+    name: string;
+    version: string;
     modLoader: string;
-    modsCount: number;
-    downloadLink: string;
+    link: string;
+    createdAt: string;
+    updatedAt: string | null;
 };
