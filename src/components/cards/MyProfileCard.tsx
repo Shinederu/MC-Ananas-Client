@@ -285,7 +285,7 @@ const MyProfileCard = ({ userDetails, garantList, refreshProfile }: MyProfileCar
                     <div className="bg-red-900 m-2 border-red-600 border-2 p-4 text-sm">
                         <p>
                             ⚠️ Attention : si vous modifiez votre garant, vous devrez à nouveau attendre
-                            son approbation pour accéder au serveur.
+                            son approbation pour accéder au serveur. De plus, vos enfants perdront également l'accès.
                         </p>
                     </div>
                 </div>
