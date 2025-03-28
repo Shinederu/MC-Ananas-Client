@@ -69,37 +69,48 @@ const ServerInfoCard = () => {
     };
 
     return (
-        <div className="h-full bg-gradient-to-br from-blue-400 to-purple-500 p-6 rounded-2xl shadow-lg text-white ">
-            <h1 className="text-3xl font-bold">CobbleAnanas</h1>
-            <div className="mt-4 flex justify-center">
-                {serverInfo.icon && (
-                    <img className="w-16 h-16 rounded-full border-2 border-white" src={serverInfo.icon} alt="Server Icon" />
-                )}
+        <div className="w-full max-w-sm sm:max-w-md md:max-w-lg mx-auto p-6 sm:p-8 flex flex-col items-center justify-center bg-gradient-to-br from-blue-400 to-purple-500 rounded-2xl shadow-lg text-white space-y-6">
+            <h1 className="text-3xl sm:text-4xl font-bold text-center">CobbleAnanas</h1>
+
+            {serverInfo.icon && (
+                <img
+                    className="w-20 h-20 sm:w-24 sm:h-24 rounded-full border-2 border-white object-cover"
+                    src={serverInfo.icon}
+                    alt="Server Icon"
+                />
+            )}
+
+            <div className="bg-white/10 rounded-xl px-4 py-3 w-full text-center space-y-1 text-base sm:text-lg">
+                <p>
+                    État:{" "}
+                    <span className={serverInfo.online ? "text-green-300" : "text-red-300"}>
+                        {serverInfo.online ? "En ligne ✅" : "Hors-ligne ❌"}
+                    </span>
+                </p>
+                <p>Version: <span className="font-medium">{serverInfo.version}</span></p>
+                <p>Joueurs: <span className="font-medium">{serverInfo.players[0]}/{serverInfo.players[1]}</span></p>
             </div>
 
-            <p className="text-lg font-semibold mt-3">
-                État: <span className={serverInfo.online ? "text-green-300" : "text-red-300"}>
-                    {serverInfo.online ? "En ligne ✅" : "Hors-ligne ❌"}
-                </span>
+            <p className="text-center opacity-80 text-sm sm:text-base">
+                {serverInfo.motd[0]}<br />
+                {serverInfo.motd[1]}
             </p>
-
-            <p className="text-md">Version: <span className="font-medium">{serverInfo.version}</span></p>
-            <p className="text-md">Joueurs: <span className="font-medium">{serverInfo.players[0]}/{serverInfo.players[1]}</span></p>
-
-            <p className="mt-3 opacity-80">
-                {serverInfo.motd[0]}
-                <br />
-                {serverInfo.motd[1]}</p>
 
             <button
                 onClick={copyToClipboard}
-                className="mt-4 bg-white text-black font-bold py-2 px-4 rounded-lg flex items-center gap-2 mx-auto transition-all duration-300 hover:bg-gray-200"
+                className="mt-2 bg-white text-black font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-all duration-300 hover:bg-gray-200"
             >
-                {copied ? "Copié !" : "play.shinederu.lol"}
-                <Copy className="w-5 h-5" />
+                {copied ? (
+                    <span className="flex items-center gap-2">Copié ! ✅</span>
+                ) : (
+                    <>
+                        play.shinederu.lol <Copy className="w-5 h-5" />
+                    </>
+                )}
             </button>
         </div>
     );
+
 }
 
 export default ServerInfoCard;
