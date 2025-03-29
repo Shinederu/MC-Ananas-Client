@@ -10,7 +10,6 @@ const Management = () => {
                 <ManageMinecraftAccountsList />
                 <MinecraftServerControlsCard />
             </div>
-
         </>
     );
 };

@@ -6,7 +6,8 @@ export type MinecraftUserType = {
         verifyBy: UserType | null;
         garant: MinecraftUserType | null;
         ban: boolean
-}
+};
+
 export type UserType = {
         id: number;
         username: string;
@@ -19,11 +20,11 @@ export type UserType = {
 export type SecurityRankType = {
         rolename: string;
         role: string[]
-}
+};
 
 export type BanType = {
         id: number;
         minecraft: MinecraftUserType;
         reason: string;
         createdAt: string;
-}
+};

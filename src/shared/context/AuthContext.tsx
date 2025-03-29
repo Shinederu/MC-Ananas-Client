@@ -1,11 +1,4 @@
 import { createContext, PropsWithChildren, useState } from 'react';
-/*
-isLoggedIn
-token
-role
-username
-*/
-
 
 type AuthDataType = {
     isLoggedIn: boolean;

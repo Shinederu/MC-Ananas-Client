@@ -1,5 +1,3 @@
-// TSX - Refacto avec ergonomie améliorée (grille alignée + garant intégré)
-
 import { AuthContext } from "@/shared/context/AuthContext";
 import { ModalContext } from "@/shared/context/ModalContext";
 import { useHttpClient } from "@/shared/hooks/http-hook";
@@ -20,19 +18,7 @@ const MyProfileCard = ({ userDetails, garantList, refreshProfile }: MyProfileCar
     const [selectedGarant, setSelectedGarant] = useState<number>(0);
     const [showGarantList, setShowGarantList] = useState<boolean>(false);
 
-    const showModal = (message: string, type: "info" | "error" | "confirm") => {
-        modalCtx.setMessage(message);
-        modalCtx.setType(type);
-        modalCtx.setIsOpen(true);
-    };
-
-    const getAccountStatus = (): "new" | "waiting" | "exclude" | "player" => {
-        if (!userDetails?.minecraft) return "new";
-        if (userDetails.securityRank?.role[0] === "ROLE_USER" && userDetails.minecraft.garant) return "waiting";
-        if (userDetails.securityRank?.role[0] === "ROLE_USER" && !userDetails.minecraft.garant) return "exclude";
-        return "player";
-    };
-
+    // Composants Locaux
     const AccountStatusBanner = ({ status }: { status: ReturnType<typeof getAccountStatus> }) => {
         const config = {
             new: { color: "text-gray-300", label: "Compte non lié" },
@@ -48,85 +34,98 @@ const MyProfileCard = ({ userDetails, garantList, refreshProfile }: MyProfileCar
         );
     };
 
+    const InfoRow = ({ label, value }: { label: string; value?: string }) => (
+        <div className="flex flex-col">
+            <label className="text-sm font-medium mb-1">{label}</label>
+            <div className="bg-white text-gray-900 text-sm px-3 py-2 rounded-md text-center w-full">
+                {value ?? "-"}
+            </div>
+        </div>
+    );
 
-
-    const addMinecraftAccount = async () => {
-        if (selectedGarant <= 0) return showModal("Merci de selectionner un garant.", "error");
-        const newUsername = prompt("Entrez votre nouveau pseudo Minecraft:");
+    const sendAddMinecraftAccount = async () => {
+        if (selectedGarant <= 0) return modalCtx.open("Merci de selectionner un garant.", "error");
+        const newUsername = prompt("Entrez votre pseudo Minecraft:");
         if (!newUsername) return;
-
         await sendRequest({
-            key: 3,
+            key: 51,
             url: import.meta.env.VITE_PLAY_API_URL + "/profil/minecraft/add",
             method: "POST",
             headers: { Authorization: authCtx.token },
             body: { pseudo: newUsername, garant_id: selectedGarant },
             onSuccess: (data) => {
-                showModal(data.message, "info");
+                modalCtx.open(data.message, "info");
                 refreshProfile();
             },
-            onError: (err) => showModal(err, "error"),
+            onError: (err) => modalCtx.open(err, "error"),
         });
     };
 
-    const refreshMinecraftAccount = async () => {
+    const sendRefreshMinecraftAccount = async () => {
         await sendRequest({
-            key: 4,
+            key: 52,
             url: import.meta.env.VITE_PLAY_API_URL + "/profil/minecraft/" + userDetails?.minecraft?.id + "/edit",
             method: "POST",
             headers: { Authorization: authCtx.token },
             onSuccess: (data) => {
-                showModal(data.message, "confirm");
+                modalCtx.open(data.message, "confirm");
                 refreshProfile();
             },
-            onError: (err) => showModal(err, "error"),
+            onError: (error) => modalCtx.open(error, "error"),
         });
     };
 
-    const deleteMinecraftAccount = async () => {
+    const sendDeleteMinecraftAccount = async () => {
         if (!confirm("Êtes-vous sûr de vouloir délier votre compte Minecraft ?")) return;
         await sendRequest({
-            key: 6,
+            key: 53,
             url: import.meta.env.VITE_PLAY_API_URL + "/profil/minecraft/" + userDetails?.minecraft?.id + "/delete",
             method: "DELETE",
             headers: { Authorization: authCtx.token },
             onSuccess: (data) => {
-                showModal(data.message, "confirm");
+                modalCtx.open(data.message, "confirm");
                 refreshProfile();
             },
-            onError: (err) => showModal(err, "error"),
+            onError: (error) => modalCtx.open(error, "error"),
         });
     };
 
-    const updateGarant = async () => {
+    const sendUpdateGarant = async () => {
         await sendRequest({
-            key: 3,
+            key: 54,
             url: import.meta.env.VITE_PLAY_API_URL + "/profil/garant/" + userDetails?.minecraft?.id + "/update",
             method: "POST",
             headers: { Authorization: authCtx.token },
             body: { garant_id: selectedGarant },
             onSuccess: (data) => {
-                showModal(data.message, "info");
+                modalCtx.open(data.message, "info");
                 refreshProfile();
                 setShowGarantList(false);
             },
-            onError: (err) => showModal(err, "error"),
+            onError: (error) => modalCtx.open(error, "error"),
         });
     };
 
-    const deleteUserAccount = async () => {
+    const sendDeleteUserAccount = async () => {
         if (!confirm("Êtes-vous sûr de vouloir supprimer votre compte ?")) return;
         await sendRequest({
-            key: 5,
+            key: 55,
             url: import.meta.env.VITE_PLAY_API_URL + "/profil/" + userDetails?.id + "/delete",
             method: "DELETE",
             headers: { Authorization: authCtx.token },
             onSuccess: (data) => {
-                showModal(data.message, "confirm");
+                modalCtx.open(data.message, "confirm");
                 location.reload();
             },
-            onError: (err) => showModal(err, "error"),
+            onError: (error) => modalCtx.open(error, "error"),
         });
+    };
+
+    const getAccountStatus = (): "new" | "waiting" | "exclude" | "player" => {
+        if (!userDetails?.minecraft) return "new";
+        if (userDetails.securityRank?.role[0] === "ROLE_USER" && userDetails.minecraft.garant) return "waiting";
+        if (userDetails.securityRank?.role[0] === "ROLE_USER" && !userDetails.minecraft.garant) return "exclude";
+        return "player";
     };
 
     const status = getAccountStatus();
@@ -137,13 +136,11 @@ const MyProfileCard = ({ userDetails, garantList, refreshProfile }: MyProfileCar
         <div className="h-full bg-gradient-to-br from-blue-400 to-purple-500 p-6 rounded-2xl shadow-lg text-white flex flex-col gap-6">
             <h1 className="text-3xl font-bold">Mon Profil</h1>
             <AccountStatusBanner status={status} />
-
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full sm:w-3/5 mx-auto">
                 <InfoRow label="Discord Username" value={userDetails?.username} />
                 <InfoRow label="Discord ID" value={userDetails?.discordId} />
                 <InfoRow label="Minecraft Account" value={userDetails?.minecraft?.pseudo} />
                 <InfoRow label="Minecraft UUID" value={userDetails?.minecraft?.uuid} />
-
                 {status === "new" && (
                     <div className="sm:col-span-2">
                         <label className="text-sm font-medium block mb-1">Sélectionner un garant</label>
@@ -160,7 +157,6 @@ const MyProfileCard = ({ userDetails, garantList, refreshProfile }: MyProfileCar
                         <p className="text-xs text-gray-100 mt-1">Un garant est requis pour lier votre compte Minecraft.</p>
                     </div>
                 )}
-
                 {userDetails?.minecraft && (
                     <div className="sm:col-span-2">
                         <label className="text-sm font-medium block mb-1">Garant actuel</label>
@@ -177,7 +173,7 @@ const MyProfileCard = ({ userDetails, garantList, refreshProfile }: MyProfileCar
                                             <option key={g.id} value={g.id}>{g.pseudo}</option>
                                         ))}
                                     </select>
-                                    <button onClick={updateGarant} className="px-4 py-2 bg-blue-600 rounded-md hover:bg-blue-700">Enregistrer</button>
+                                    <button onClick={sendUpdateGarant} className="px-4 py-2 bg-blue-600 rounded-md hover:bg-blue-700">Enregistrer</button>
                                 </div>
                             </>
                         ) : showGarantList ? (
@@ -192,7 +188,7 @@ const MyProfileCard = ({ userDetails, garantList, refreshProfile }: MyProfileCar
                                         <option key={g.id} value={g.id}>{g.pseudo}</option>
                                     ))}
                                 </select>
-                                <button onClick={updateGarant} className="px-4 py-2 bg-blue-600 rounded-md hover:bg-blue-700">Enregistrer</button>
+                                <button onClick={sendUpdateGarant} className="px-4 py-2 bg-blue-600 rounded-md hover:bg-blue-700">Enregistrer</button>
                                 <button onClick={() => setShowGarantList(false)} className="px-4 py-2 bg-gray-600 rounded-md hover:bg-gray-700">Annuler</button>
                             </div>
                         ) : (
@@ -209,27 +205,25 @@ const MyProfileCard = ({ userDetails, garantList, refreshProfile }: MyProfileCar
                     </div>
                 )}
             </div>
-
             <div className="flex gap-4 justify-center flex-wrap w-full sm:w-3/5 mx-auto">
                 {userDetails?.minecraft ? (
                     <>
-                        <button onClick={refreshMinecraftAccount} className="min-w-[150px] px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
+                        <button onClick={sendRefreshMinecraftAccount} className="min-w-[150px] px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
                             Actualiser Minecraft
                         </button>
-                        <button onClick={deleteMinecraftAccount} className="min-w-[150px] px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700">
+                        <button onClick={sendDeleteMinecraftAccount} className="min-w-[150px] px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700">
                             Supprimer Minecraft
                         </button>
                     </>
                 ) : (
-                    <button onClick={addMinecraftAccount} className="min-w-[150px] px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                    <button onClick={sendAddMinecraftAccount} className="min-w-[150px] px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
                         Lier Minecraft
                     </button>
                 )}
-                <button onClick={deleteUserAccount} className="min-w-[150px] px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700">
+                <button onClick={sendDeleteUserAccount} className="min-w-[150px] px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700">
                     Supprimer mon compte
                 </button>
             </div>
-
             {status === "new" && (
                 <div className="w-full sm:w-3/5 mx-auto">
                     <div className="bg-slate-800 m-2 border-gray-600 border-2 p-4 text-sm">
@@ -244,7 +238,6 @@ const MyProfileCard = ({ userDetails, garantList, refreshProfile }: MyProfileCar
                     </div>
                 </div>
             )}
-
             {status === "waiting" && (
                 <div className="w-full sm:w-3/5 mx-auto">
                     <div className="bg-yellow-900 m-2 border-yellow-600 border-2 p-4 text-sm">
@@ -256,7 +249,6 @@ const MyProfileCard = ({ userDetails, garantList, refreshProfile }: MyProfileCar
                     </div>
                 </div>
             )}
-
             {status === "exclude" && (
                 <div className="w-full sm:w-3/5 mx-auto">
                     <div className="bg-red-900 m-2 border-red-600 border-2 p-4 text-sm">
@@ -268,7 +260,6 @@ const MyProfileCard = ({ userDetails, garantList, refreshProfile }: MyProfileCar
                     </div>
                 </div>
             )}
-
             {status === "player" && !showGarantList && (
                 <div className="w-full sm:w-3/5 mx-auto">
                     <div className="bg-slate-800 m-2 border-yellow-400 border-2 p-4 text-sm">
@@ -279,7 +270,6 @@ const MyProfileCard = ({ userDetails, garantList, refreshProfile }: MyProfileCar
                     </div>
                 </div>
             )}
-
             {status === "player" && showGarantList && (
                 <div className="w-full sm:w-3/5 mx-auto">
                     <div className="bg-red-900 m-2 border-red-600 border-2 p-4 text-sm">
@@ -290,19 +280,8 @@ const MyProfileCard = ({ userDetails, garantList, refreshProfile }: MyProfileCar
                     </div>
                 </div>
             )}
-
-
         </div>
     );
 };
-
-const InfoRow = ({ label, value }: { label: string; value?: string }) => (
-    <div className="flex flex-col">
-        <label className="text-sm font-medium mb-1">{label}</label>
-        <div className="bg-white text-gray-900 text-sm px-3 py-2 rounded-md text-center w-full">
-            {value ?? "-"}
-        </div>
-    </div>
-);
 
 export default MyProfileCard;

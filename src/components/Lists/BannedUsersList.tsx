@@ -15,29 +15,22 @@ const BannedUsersList = (props: BannedUsersListProps) => {
     const modalCtx = useContext(ModalContext);
     const authCtx = useContext(AuthContext);
 
-    const unban = (user: MinecraftUserType) => {
-        const confirmBan = confirm("Êtes-vous sûr de vouloir débannir" + user.pseudo + "?");
+    const sendUnban = async (user: MinecraftUserType) => {
+        const confirmBan = confirm("Êtes-vous sûr de vouloir débannir " + user.pseudo + " ?");
         if (confirmBan) {
-            const sendMinecraftUnban = async () => {
-                await sendRequest({
-                    key: 4,
-                    url: import.meta.env.VITE_PLAY_API_URL + '/users/minecraft/' + user.id + '/unban',
-                    method: 'POST',
-                    headers: { Authorization: authCtx.token },
-                    onSuccess: (data) => {
-                        modalCtx.setMessage(data.message);
-                        modalCtx.setType("confirm");
-                        modalCtx.setIsOpen(true);
-                        props.refreshList();
-                    },
-                    onError: (error) => {
-                        modalCtx.setMessage(error);
-                        modalCtx.setType("error");
-                        modalCtx.setIsOpen(true);
-                    },
-                });
-            };
-            sendMinecraftUnban();
+            await sendRequest({
+                key: 91,
+                url: import.meta.env.VITE_PLAY_API_URL + '/users/minecraft/' + user.id + '/unban',
+                method: 'POST',
+                headers: { Authorization: authCtx.token },
+                onSuccess: (data) => {
+                    modalCtx.open(data.message, "confirm");
+                    props.refreshList();
+                },
+                onError: (error) => {
+                    modalCtx.open(error, "error");
+                },
+            });
         }
     }
 
@@ -58,15 +51,12 @@ const BannedUsersList = (props: BannedUsersListProps) => {
                         {props.banList[0] ?
                             <>
                                 {props.banList.map((ban) => (
-                                    <tr
-                                        key={ban.id}
-                                        className="border-b transition-colors"
-                                    >
+                                    <tr key={ban.id} className="border-b transition-colors">
                                         <td className="px-4 py-2">{ban.minecraft.pseudo}</td>
                                         <td className="px-4 py-2">{ban.minecraft.user.username}</td>
                                         <td className="px-4 py-2">{ban.reason}</td>
                                         <td className="px-4 py-2">{DateTimeFormatter(ban.createdAt)}</td>
-                                        <td><button className="b-2 border px-2 font-bold bg-red-600 hover:scale-125 transition" onClick={() => unban(ban.minecraft)}>Débannir</button></td>
+                                        <td><button className="b-2 border px-2 font-bold bg-red-600 hover:scale-125 transition" onClick={() => sendUnban(ban.minecraft)}>Débannir</button></td>
                                     </tr>
                                 ))}
                             </>

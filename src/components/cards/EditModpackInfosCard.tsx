@@ -10,12 +10,13 @@ const ModpackInfosCard = () => {
     const { sendRequest } = useHttpClient();
     const modalCtx = useContext(ModalContext);
     const authCtx = useContext(AuthContext);
+
     const [modpack, setModpack] = useState<ModpackType>();
     const [mcVersionList, setMcVersionList] = useState<string[]>([]);
 
     const sendGetModpackInfo = async () => {
         await sendRequest({
-            key: 4,
+            key: 21,
             url: import.meta.env.VITE_PLAY_API_URL + '/management/modpack',
             method: 'GET',
             headers: { Authorization: authCtx.token },
@@ -23,16 +24,14 @@ const ModpackInfosCard = () => {
                 setModpack(data.modpack)
             },
             onError: (error) => {
-                modalCtx.setMessage(error);
-                modalCtx.setType("error");
-                modalCtx.setIsOpen(true);
+                modalCtx.open(error, "error");
             },
         });
     };
 
-    const sendGetMinecraftVersionList = async () => {
+    const sendGetMinecraftVersionsList = async () => {
         await sendRequest({
-            key: 4,
+            key: 22,
             url: 'https://piston-meta.mojang.com/mc/game/version_manifest_v2.json',
             method: 'GET',
             credentials: false,
@@ -42,28 +41,14 @@ const ModpackInfosCard = () => {
                     .map((v: any) => v.id));
             },
             onError: (error) => {
-                modalCtx.setMessage(error);
-                modalCtx.setType("error");
-                modalCtx.setIsOpen(true);
+                modalCtx.open(error, "error");
             },
         });
     };
 
-    useEffect(() => {
-        sendGetMinecraftVersionList();
-        sendGetModpackInfo();
-    }, []);
-
-
-    const handleChange = (key: keyof ModpackType, value: string | number) => {
-        setModpack((prev) =>
-            prev ? { ...prev, [key]: value } : undefined
-        );
-    };
-
-    const onSave = async () => {
+    const sendSaveChanges = async () => {
         await sendRequest({
-            key: 4,
+            key: 23,
             url: import.meta.env.VITE_PLAY_API_URL + '/management/modpack/' + modpack?.id + '/edit',
             method: 'POST',
             headers: { Authorization: authCtx.token },
@@ -77,17 +62,24 @@ const ModpackInfosCard = () => {
                 updatedAt: modpack?.updatedAt
             },
             onSuccess: (data) => {
-                modalCtx.setMessage(data.message);
-                modalCtx.setType("confirm");
-                modalCtx.setIsOpen(true);
+                modalCtx.open(data.message, "confirm");
             },
             onError: (error) => {
-                modalCtx.setMessage(error);
-                modalCtx.setType("error");
-                modalCtx.setIsOpen(true);
+                modalCtx.open(error, "error");
             },
         });
     }
+
+    useEffect(() => {
+        sendGetMinecraftVersionsList();
+        sendGetModpackInfo();
+    }, []);
+
+    const handleChange = (key: keyof ModpackType, value: string | number) => {
+        setModpack((prev) =>
+            prev ? { ...prev, [key]: value } : undefined
+        );
+    };
 
     return (
         <div className="h-full bg-gradient-to-br from-red-400 to-purple-500 p-6 rounded-2xl shadow-lg text-white">
@@ -105,7 +97,6 @@ const ModpackInfosCard = () => {
                         className="w-full px-3 py-2 rounded-lg text-black"
                     />
                 </div>
-
                 <div>
                     <label htmlFor="version" className="block mb-1 font-semibold">Version Minecraft</label>
                     <select
@@ -122,7 +113,6 @@ const ModpackInfosCard = () => {
                         ))}
                     </select>
                 </div>
-
                 <div>
                     <label htmlFor="modLoader" className="block mb-1 font-semibold">Mod Loader</label>
                     <input
@@ -134,7 +124,6 @@ const ModpackInfosCard = () => {
                         className="w-full px-3 py-2 rounded-lg text-black"
                     />
                 </div>
-
                 <div>
                     <label htmlFor="link" className="block mb-1 font-semibold">Lien de téléchargement</label>
                     <input
@@ -146,9 +135,8 @@ const ModpackInfosCard = () => {
                         className="w-full px-3 py-2 rounded-lg text-black"
                     />
                 </div>
-
                 <button
-                    onClick={() => onSave()}
+                    onClick={() => sendSaveChanges()}
                     className="bg-white text-black font-bold py-2 px-4 rounded-lg flex items-center gap-2 mx-auto transition-all duration-300 hover:bg-gray-200"
                 >
                     Enregistrer le modpack

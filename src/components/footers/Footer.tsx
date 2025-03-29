@@ -1,5 +1,3 @@
-
-
 const Footer = () => {
   return (
     <footer className="text-center py-5 bg-[#1a1a1a] mt-8 text-gray-400 text-sm mx">

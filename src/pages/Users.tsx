@@ -7,8 +7,7 @@ import { ModalContext } from "@/shared/context/ModalContext";
 import { useHttpClient } from "@/shared/hooks/http-hook";
 import { useInterval } from "@/shared/hooks/useInterval";
 import { BanType, MinecraftUserType, UserType } from "@/types/User";
-import { useContext, useEffect, useState } from "react";
-
+import { useContext, useState } from "react";
 
 const Users = () => {
 
@@ -21,65 +20,44 @@ const Users = () => {
     const [allowedUsers, setAllowedUsers] = useState<MinecraftUserType[]>([]);
     const [bannedUsers, setBannedUsers] = useState<BanType[]>([]);
 
-
-    const getUsersLists = async () => {
-        try {
-            await sendRequest({
-                key: 20,
-                url: import.meta.env.VITE_PLAY_API_URL + '/users/',
-                method: 'GET',
-                headers: { Authorization: authCtx.token },
-                onSuccess: (data) => {
-                    if (data) {
-                        setChildsResquest(data?.userGarant);
-                        setCurrentChild(data?.children)
-                        setAllowedUsers(data?.minecrafts);
-                        setBannedUsers(data?.bans);
-                    }
-                },
-                onError: (error) => {
-                    modalCtx.setMessage(error);
-                    modalCtx.setType("error");
-                    modalCtx.setIsOpen(true);
-                },
-            });
-        } catch (error) {
-            console.error("Erreur lors de la vérification de la connexion :", error);
-        }
+    const sendGetUsersLists = async () => {
+        await sendRequest({
+            key: 130,
+            url: import.meta.env.VITE_PLAY_API_URL + '/users/',
+            method: 'GET',
+            headers: { Authorization: authCtx.token },
+            onSuccess: (data) => {
+                if (data) {
+                    setChildsResquest(data?.userGarant);
+                    setCurrentChild(data?.children)
+                    setAllowedUsers(data?.minecrafts);
+                    setBannedUsers(data?.bans);
+                }
+            },
+            onError: (error) => {
+                modalCtx.open(error, "error");
+            },
+        });
     };
 
-    useEffect(() => {
-        getUsersLists();
-    }, []);
-
     useInterval(() => {
-        getUsersLists();
+        sendGetUsersLists();
     }, 5000);
-
 
     return (
         <>
             <div className="grid grid-cols-2 w-full h-full p-4 gap-4 items-stretch">
                 <div className="flex flex-col gap-4 w-full h-full">
-                    <PendingUserList userList={childsResquest} refreshList={getUsersLists} />
-                    <CurrentChildList userList={currentChild} refreshList={getUsersLists} />
+                    <PendingUserList userList={childsResquest} refreshList={sendGetUsersLists} />
+                    <CurrentChildList userList={currentChild} refreshList={sendGetUsersLists} />
                 </div>
-
                 <div className="flex flex-col gap-4 w-full h-full">
-                    <AuthorizedUsersList userList={allowedUsers} refreshList={getUsersLists} />
+                    <AuthorizedUsersList userList={allowedUsers} refreshList={sendGetUsersLists} />
                 </div>
             </div>
-
-            {authCtx.role == "ROLE_FRIEND" || authCtx.role == "ROLE_ADMIN" ?
-                <>
-                    <div>
-                        <BannedUsersList banList={bannedUsers} refreshList={getUsersLists} />
-                    </div>
-                </>
-                :
-                <>
-                </>
-            }
+            {(authCtx.role === "ROLE_FRIEND" || authCtx.role === "ROLE_ADMIN") && (
+                <BannedUsersList banList={bannedUsers} refreshList={sendGetUsersLists} />
+            )}
         </>
     );
 }

@@ -3,9 +3,6 @@ type TitleProps = {
     size: number;
 }
 
-
-
-
 const Title = (props: TitleProps) => {
     const checkSize = () => {
         switch (props.size) {
@@ -21,7 +18,6 @@ const Title = (props: TitleProps) => {
                 return "text-4xl font-extrabold tracking-tigh text-blue-700t"
         }
     }
-
 
     return (
         <div className="pt-2 pb-3">

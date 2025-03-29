@@ -5,7 +5,7 @@ import { ModalContext } from "@/shared/context/ModalContext";
 import { useHttpClient } from "@/shared/hooks/http-hook";
 import { useInterval } from "@/shared/hooks/useInterval";
 import { MinecraftUserType, UserType } from "@/types/User";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 
 const Profile = () => {
 
@@ -18,7 +18,7 @@ const Profile = () => {
 
     const sendGetProfile = async () => {
         await sendRequest({
-            key: 3,
+            key: 121,
             url: import.meta.env.VITE_PLAY_API_URL + '/profil',
             method: 'GET',
             headers: { Authorization: authCtx.token },
@@ -27,16 +27,10 @@ const Profile = () => {
                 setListGarants(data.allowedGarant);
             },
             onError: (error) => {
-                modalCtx.setMessage(error);
-                modalCtx.setType("error");
-                modalCtx.setIsOpen(true);
+                modalCtx.open(error, "error");
             },
         });
     };
-
-    useEffect(() => {
-        sendGetProfile();
-    }, []);
 
     useInterval(() => {
         sendGetProfile();
@@ -45,12 +39,7 @@ const Profile = () => {
     return (
         <>
             <div className="grid grid-cols-3 gap-4">
-                {/* Section Skin Minecraft */}
-                <div>
-                    <MinecraftSkinCard username={userDetails?.minecraft?.pseudo + ""} />
-                </div>
-
-                {/* Section Infos */}
+                <MinecraftSkinCard username={userDetails?.minecraft?.pseudo + ""} />
                 <div className="col-span-2">
                     <MyProfileCard userDetails={userDetails} garantList={listGarants} refreshProfile={sendGetProfile} />
                 </div>

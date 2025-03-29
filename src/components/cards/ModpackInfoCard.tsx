@@ -14,11 +14,9 @@ const ModpackInfoCard = () => {
 
     const [modpack, setModspack] = useState<ModpackType>();
 
-
-
     const sendGetModpackInfo = async () => {
         await sendRequest({
-            key: 4,
+            key: 41,
             url: import.meta.env.VITE_PLAY_API_URL + '/management/modpack',
             method: 'GET',
             headers: { Authorization: authCtx.token },
@@ -26,9 +24,7 @@ const ModpackInfoCard = () => {
                 setModspack(data.modpack)
             },
             onError: (error) => {
-                modalCtx.setMessage(error);
-                modalCtx.setType("error");
-                modalCtx.setIsOpen(true);
+                modalCtx.open(error, "error");
             },
         });
     };
@@ -36,7 +32,6 @@ const ModpackInfoCard = () => {
     useEffect(() => {
         sendGetModpackInfo();
     }, []);
-
 
     const openToDownload = () => {
         window.open(modpack?.link, '_blank', 'noopener,noreferrer');
@@ -49,17 +44,10 @@ const ModpackInfoCard = () => {
                     {modpack?.name}
                 </h1>
             </div>
-
             <div className="bg-white/10 rounded-xl px-4 py-3 w-full text-center space-y-2 text-base sm:text-lg">
-                {modpack?.updatedAt ? (
-                    <p>
-                        Mise à jour le <span className="font-medium">{DateTimeFormatter(modpack?.updatedAt)}</span>
-                    </p>
-                ) : (
-                    <p>
-                        Créé le <span className="font-medium">{DateTimeFormatter(modpack?.createdAt ?? '')}</span>
-                    </p>
-                )}
+                <p>
+                    Mise à jour le <span className="font-medium">{DateTimeFormatter(modpack?.updatedAt ?? (modpack?.createdAt ?? ''))}</span>
+                </p>
                 <p>
                     Version Minecraft : <span className="font-medium">{modpack?.version}</span>
                 </p>
@@ -67,7 +55,6 @@ const ModpackInfoCard = () => {
                     Mod Loader : <span className="font-medium">{modpack?.modLoader}</span>
                 </p>
             </div>
-
             <div>
                 <button
                     onClick={openToDownload}
@@ -79,8 +66,6 @@ const ModpackInfoCard = () => {
             </div>
         </div>
     );
-
-
 }
 
 export default ModpackInfoCard;

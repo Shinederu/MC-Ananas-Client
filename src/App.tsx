@@ -15,45 +15,18 @@ const App = () => {
   const { sendRequest } = useHttpClient();
   const authCtx = useContext(AuthContext);
   const modalCtx = useContext(ModalContext);
-  const [isReady, setIsReady] = useState<Boolean>(false);
   let navigate = useNavigate();
   const loc = useLocation();
 
-  useEffect(() => {
-    const sendIsConnected = async () => {
-      await sendRequest({
-        key: 3,
-        url: import.meta.env.VITE_PLAY_API_URL + '/isConnected',
-        method: 'GET',
-        onSuccess: (data) => {
-          if (data.Token) {
-            authCtx.setAuthData({
-              isLoggedIn: true,
-              token: "Bearer " + data.Token,
-              role: data.Role[0].trim(),
-              username: data.Username,
-            });
-          }
-          navigate(loc.pathname);
-        },
-        onError: () => {
-          modalCtx.setMessage("Impossible de contacter le serveur... Réessayer plus tard !");
-          modalCtx.setType("error");
-          modalCtx.setIsOpen(true);
-        },
-      });
-    };
-    sendIsConnected();
-    setIsReady(true);
-  }, []);
+  const [isReady, setIsReady] = useState<boolean>(false);
 
-  const sendRefreshRole = async () => {
+  const sendIsConnected = async () => {
     await sendRequest({
-      key: 3,
+      key: 1,
       url: import.meta.env.VITE_PLAY_API_URL + '/isConnected',
       method: 'GET',
       onSuccess: (data) => {
-        if (data.Role[0].trim() != authCtx.role) {
+        if (data.Token) {
           authCtx.setAuthData({
             isLoggedIn: true,
             token: "Bearer " + data.Token,
@@ -61,54 +34,43 @@ const App = () => {
             username: data.Username,
           });
         }
+        navigate(loc.pathname);
       },
-      onError: () => {
-        modalCtx.setMessage("Impossible de contacter le serveur... Réessayer plus tard !");
-        modalCtx.setType("error");
-        modalCtx.setIsOpen(true);
+      onError: (error) => {
+        modalCtx.open("Impossible de contacter le serveur... Réessayer plus tard !", "error", error);
       },
     });
-
+    setIsReady(true);
   };
 
+  //Envois une fois la requête au démarrage
+  useEffect(() => {
+    sendIsConnected()
+  }, [])
+
+  //Envois l'actualisation seulement si l'utilisateur est connecté
   useInterval(() => {
-    if (authCtx.isLoggedIn) sendRefreshRole();
+    if (authCtx.isLoggedIn) sendIsConnected();
   }, 5000);
-
-
 
   return (
     <>
-      {isReady ?
-        <>
-          {authCtx.role == "ROLE_BAN" ?
-            <>
-              <Banned />
-            </>
-            :
-            <>
-              <div className="min-h-screen flex flex-col font-[Poppins]">
-                <Header />
-
-                <div className="flex-1 flex flex-col">
-                  <main className="w-11/12 mx-auto my-5 p-8 rounded-lg shadow-lg text-center">
-                    {isReady ?
-                      <Routes>{getRoutes(authCtx.role)}</Routes>
-                      :
-                      <Title size={1} title="Chargement..." />
-                    }
-                  </main>
-                </div>
-
-                <Footer />
-              </div>
-            </>
-          }
-        </>
+      {authCtx.role == "ROLE_BAN" ?
+        <Banned />
         :
-        <>
-          <Title size={1} title="Chargement..." />
-        </>
+        <div className="min-h-screen flex flex-col font-[Poppins]">
+          <Header />
+          <div className="flex-1 flex flex-col">
+            <main className="w-11/12 mx-auto my-5 p-8 rounded-lg shadow-lg text-center">
+              {isReady ?
+                <Routes>{getRoutes(authCtx.role)}</Routes>
+                :
+                <Title size={1} title="Chargement..." />
+              }
+            </main>
+          </div>
+          <Footer />
+        </div>
       }
     </>
   );

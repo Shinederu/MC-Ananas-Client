@@ -14,29 +14,22 @@ const CurrentChildList = (props: CurrentChildListProps) => {
     const modalCtx = useContext(ModalContext);
     const authCtx = useContext(AuthContext);
 
-    const cancel = (user: MinecraftUserType) => {
+    const sendRemoveChild = async (user: MinecraftUserType) => {
         const confirmCanceled = confirm("Voulez-vous vraiment arrêter de vous porter garant pour " + user.pseudo + " ? Il perdra l'accès au serveur et devrat ré-effectuer une demande de garant.");
         if (confirmCanceled) {
-            const sendCanceled = async () => {
-                await sendRequest({
-                    key: 4,
-                    url: import.meta.env.VITE_PLAY_API_URL + '/users/minecraft/' + user.id + '/remove-child',
-                    method: 'POST',
-                    headers: { Authorization: authCtx.token },
-                    onSuccess: (data) => {
-                        modalCtx.setMessage(data.message);
-                        modalCtx.setType("confirm");
-                        modalCtx.setIsOpen(true);
-                        props.refreshList();
-                    },
-                    onError: (error) => {
-                        modalCtx.setMessage(error);
-                        modalCtx.setType("error");
-                        modalCtx.setIsOpen(true);
-                    },
-                });
-            };
-            sendCanceled();
+            await sendRequest({
+                key: 92,
+                url: import.meta.env.VITE_PLAY_API_URL + '/users/minecraft/' + user.id + '/remove-child',
+                method: 'POST',
+                headers: { Authorization: authCtx.token },
+                onSuccess: (data) => {
+                    modalCtx.open(data.message, "confirm");
+                    props.refreshList();
+                },
+                onError: (error) => {
+                    modalCtx.open(error, "error");
+                },
+            });
         }
     }
 
@@ -50,40 +43,24 @@ const CurrentChildList = (props: CurrentChildListProps) => {
                         <tr className="bg-gray-500 text-white">
                             <th className="px-4 py-2 text-center">Minecraft</th>
                             <th className="px-4 py-2 text-center">Discord</th>
-
-                            {authCtx.role == "ROLE_FRIEND" || authCtx.role == "ROLE_ADMIN" ?
-                                <>
-                                    <th className="px-4 py-2 text-center">Garant lié</th>
-
-                                </>
-                                :
-                                <>
-                                </>
-                            }
+                            {(authCtx.role == "ROLE_FRIEND" || authCtx.role == "ROLE_ADMIN") && (
+                                < th className="px-4 py-2 text-center">Garant lié</th>
+                            )}
                             <th className="px-4 py-2 text-center">Autorisation fournie par</th>
                             <th className="px-4 py-2 text-center">Action(s)</th>
-                            
                         </tr>
                         {props.userList[0] ?
                             <>
                                 {props.userList.map((minecraftUser) => (
-                                    <tr
-                                        key={minecraftUser.id}
-                                        className="border-b transition-colors"
-                                    >
+                                    <tr key={minecraftUser.id} className="border-b transition-colors">
                                         <td className="px-4 py-2">{minecraftUser.pseudo}</td>
                                         <td className="px-4 py-2">{minecraftUser.user.username}</td>
-                                        {authCtx.role == "ROLE_FRIEND" || authCtx.role == "ROLE_ADMIN" ?
-                                            <>
-                                                <th className="px-4 py-2 text-center">{minecraftUser.garant?.pseudo}</th>
-                                            </>
-                                            :
-                                            <>
-                                            </>
-                                        }
+                                        {(authCtx.role == "ROLE_FRIEND" || authCtx.role == "ROLE_ADMIN") && (
+                                            <th className="px-4 py-2 text-center">{minecraftUser.garant?.pseudo}</th>
+                                        )}
                                         <td className="px-4 py-2">{minecraftUser.verifyBy?.username}</td>
                                         <td className="flex justify-center px-4 py-2 gap-2">
-                                            <button className="b-2 border px-2 font-bold bg-red-600 hover:scale-125 transition" onClick={() => cancel(minecraftUser)}>Retirer l'accès</button>
+                                            <button className="b-2 border px-2 font-bold bg-red-600 hover:scale-125 transition" onClick={() => sendRemoveChild(minecraftUser)}>Retirer l'accès</button>
                                         </td>
                                     </tr>
                                 ))}
@@ -96,11 +73,10 @@ const CurrentChildList = (props: CurrentChildListProps) => {
                                     </td>
                                 </tr>
                             </>
-
                         }
                     </tbody>
                 </table>
-            </div>
+            </div >
         </>
     );
 }

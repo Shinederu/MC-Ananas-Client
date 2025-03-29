@@ -6,7 +6,6 @@ import Profile from "@/pages/Profile";
 import Banned from "@/pages/Banned";
 import Management from "@/pages/Management";
 
-
 //Routes autorisées pour les anonymes
 const anonymous = () => (
     <>
@@ -28,7 +27,6 @@ const logged = () => (
         <Route path="/Profile" element={<Profile />} />
     </>
 )
-
 
 const minecraft = () => (
     <>
