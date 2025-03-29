@@ -50,7 +50,7 @@ const MinecraftServerControlsCard = () => {
             headers: { Authorization: authCtx.token },
             body: { command: commandtoSend },
             onSuccess: (data) => {
-                modalCtx.open(data.message, "confirm");
+                modalCtx.open(data.message, "result");
             },
             onError: (error) => {
                 modalCtx.open(error, "error");
@@ -65,7 +65,7 @@ const MinecraftServerControlsCard = () => {
             method: 'POST',
             headers: { Authorization: authCtx.token },
             onSuccess: (data) => {
-                modalCtx.open(data.message, "confirm");
+                modalCtx.open(data.message, "result");
             },
             onError: (error) => {
                 modalCtx.open(error, "error");
@@ -77,8 +77,8 @@ const MinecraftServerControlsCard = () => {
         sendCheckServer();
     }, 5000);
 
-    const handleSendMinecraftCommand = () => {
-        const command = prompt("Entrer la commande a exécuter: ");
+    const handleSendMinecraftCommand = async () => {
+        const command = await modalCtx.open("Entrer la commande a exécuter: ", "prompt");
         if (!command) return;
         sendMinecraftCommand(command);
     }

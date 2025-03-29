@@ -62,7 +62,7 @@ const ModpackInfosCard = () => {
                 updatedAt: modpack?.updatedAt
             },
             onSuccess: (data) => {
-                modalCtx.open(data.message, "confirm");
+                modalCtx.open(data.message, "result");
             },
             onError: (error) => {
                 modalCtx.open(error, "error");
@@ -105,7 +105,7 @@ const ModpackInfosCard = () => {
                         onChange={(e) => handleChange("version", e.target.value)}
                         className="w-full px-3 py-2 rounded-lg text-black"
                     >
-                        <option value="">Sélectionne une version Minecraft</option>
+                        <option value="" disabled={true}>Sélectionne une version Minecraft</option>
                         {mcVersionList.map((version) => (
                             <option key={version} value={version}>
                                 {version}

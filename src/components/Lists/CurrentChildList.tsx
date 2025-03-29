@@ -15,7 +15,7 @@ const CurrentChildList = (props: CurrentChildListProps) => {
     const authCtx = useContext(AuthContext);
 
     const sendRemoveChild = async (user: MinecraftUserType) => {
-        const confirmCanceled = confirm("Voulez-vous vraiment arrêter de vous porter garant pour " + user.pseudo + " ? Il perdra l'accès au serveur et devrat ré-effectuer une demande de garant.");
+        const confirmCanceled = await modalCtx.open("Voulez-vous vraiment arrêter de vous porter garant pour " + user.pseudo + " ? Il perdra l'accès au serveur et devrat ré-effectuer une demande de garant.", "confirm");
         if (confirmCanceled) {
             await sendRequest({
                 key: 92,
@@ -23,7 +23,7 @@ const CurrentChildList = (props: CurrentChildListProps) => {
                 method: 'POST',
                 headers: { Authorization: authCtx.token },
                 onSuccess: (data) => {
-                    modalCtx.open(data.message, "confirm");
+                    modalCtx.open(data.message, "result");
                     props.refreshList();
                 },
                 onError: (error) => {

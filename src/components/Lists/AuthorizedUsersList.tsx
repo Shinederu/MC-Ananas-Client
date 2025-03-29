@@ -15,7 +15,7 @@ const AuthorizedUsersList = (props: AuthorizedUsersListProps) => {
     const authCtx = useContext(AuthContext);
 
     const sendMinecraftBan = async (minecraftUser: MinecraftUserType) => {
-        const confirmBan = prompt("Pourquoi vouloir bannir " + minecraftUser.pseudo + " ?");
+        const confirmBan = await modalCtx.open("Pourquoi vouloir bannir " + minecraftUser.pseudo + " ?", "prompt");
         if (confirmBan) {
             await sendRequest({
                 key: 81,
@@ -24,7 +24,7 @@ const AuthorizedUsersList = (props: AuthorizedUsersListProps) => {
                 body: { reason: confirmBan },
                 headers: { Authorization: authCtx.token },
                 onSuccess: (data) => {
-                    modalCtx.open(data.message, "confirm");
+                    modalCtx.open(data.message, "result");
 
                     props.refreshList();
                 },
@@ -37,7 +37,7 @@ const AuthorizedUsersList = (props: AuthorizedUsersListProps) => {
     }
 
     const sendPromote = async (minecraftUser: MinecraftUserType) => {
-        const confirmPromote = confirm("Êtes-vous sûr de vouloir promouvoir " + minecraftUser.pseudo + " ?");
+        const confirmPromote = await modalCtx.open("Êtes-vous sûr de vouloir promouvoir " + minecraftUser.pseudo + " ?", "confirm");
         if (confirmPromote) {
             await sendRequest({
                 key: 82,
@@ -45,7 +45,7 @@ const AuthorizedUsersList = (props: AuthorizedUsersListProps) => {
                 method: 'POST',
                 headers: { Authorization: authCtx.token },
                 onSuccess: (data) => {
-                    modalCtx.open(data.message, "confirm");
+                    modalCtx.open(data.message, "result");
                     props.refreshList();
                 },
                 onError: (error) => {
@@ -56,7 +56,7 @@ const AuthorizedUsersList = (props: AuthorizedUsersListProps) => {
     }
 
     const sendDemote = async (minecraftUser: MinecraftUserType) => {
-        const confirmRetrograde = confirm("Êtes-vous sûr de vouloir rétrograder " + minecraftUser.pseudo + " ?");
+        const confirmRetrograde = await modalCtx.open("Êtes-vous sûr de vouloir rétrograder " + minecraftUser.pseudo + " ?", "confirm");
         if (confirmRetrograde) {
             await sendRequest({
                 key: 83,
@@ -64,7 +64,7 @@ const AuthorizedUsersList = (props: AuthorizedUsersListProps) => {
                 method: 'POST',
                 headers: { Authorization: authCtx.token },
                 onSuccess: (data) => {
-                    modalCtx.open(data.message, "confirm");
+                    modalCtx.open(data.message, "result");
                     props.refreshList();
                 },
                 onError: (error) => {

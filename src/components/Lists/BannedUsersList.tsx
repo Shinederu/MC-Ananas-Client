@@ -16,7 +16,7 @@ const BannedUsersList = (props: BannedUsersListProps) => {
     const authCtx = useContext(AuthContext);
 
     const sendUnban = async (user: MinecraftUserType) => {
-        const confirmBan = confirm("Êtes-vous sûr de vouloir débannir " + user.pseudo + " ?");
+        const confirmBan = await modalCtx.open("Êtes-vous sûr de vouloir débannir " + user.pseudo + " ?","confirm");
         if (confirmBan) {
             await sendRequest({
                 key: 91,
@@ -24,7 +24,7 @@ const BannedUsersList = (props: BannedUsersListProps) => {
                 method: 'POST',
                 headers: { Authorization: authCtx.token },
                 onSuccess: (data) => {
-                    modalCtx.open(data.message, "confirm");
+                    modalCtx.open(data.message, "result");
                     props.refreshList();
                 },
                 onError: (error) => {

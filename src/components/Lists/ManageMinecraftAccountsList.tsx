@@ -29,7 +29,7 @@ const ManageMinecraftAccountsList = () => {
     };
 
     const sendDeleteMinecraftAccount = async (minecraftUser: MinecraftUserType) => {
-        const confirmRemove = confirm("Voulez-vous réellement supprimer le compte Minecraft " + minecraftUser.pseudo + " ?")
+        const confirmRemove = await modalCtx.open("Voulez-vous réellement supprimer le compte Minecraft " + minecraftUser.pseudo + " ?", "confirm");
         if (confirmRemove) {
             await sendRequest({
                 key: 102,
@@ -37,7 +37,7 @@ const ManageMinecraftAccountsList = () => {
                 method: 'DELETE',
                 headers: { Authorization: authCtx.token },
                 onSuccess: (data) => {
-                    modalCtx.open(data.message, "confirm");
+                    modalCtx.open(data.message, "result");
                 },
                 onError: (error) => {
                     modalCtx.open(error, "error");

@@ -1,63 +1,82 @@
 import { createContext, PropsWithChildren, useState } from "react";
 
+export type ModalType = "error" | "result" | "info" | "confirm" | "prompt";
+
 export interface ModalContextType {
     isOpen: boolean;
-    type: "error" | "confirm" | "info";
+    type: ModalType;
     message: string;
     subMessage: string;
-    onClose?: () => void;
-    open: (message: string, type?: "error" | "confirm" | "info", subMessage?: string, onClose?: () => void) => void;
-    close: () => void;
+
+    open(message: string, type: "prompt", subMessage?: string, onResolve?: () => void): Promise<string | undefined>;
+    open(message: string, type: "confirm", subMessage?: string, onResolve?: () => void): Promise<boolean>;
+    open(message: string, type?: "info" | "error" | "result", subMessage?: string, onResolve?: () => void): Promise<void>;
+
+    close: (response?: string | boolean) => void;
 }
+
+// 🛠️ Dummy function castée proprement
+const dummyOpen: ModalContextType["open"] = (() => Promise.resolve()) as any;
 
 export const ModalContext = createContext<ModalContextType>({
     isOpen: false,
     type: "info",
     message: "",
     subMessage: "",
-    onClose: undefined,
-    open: () => { },
+    open: dummyOpen,
     close: () => { },
 });
 
 export const ModalProvider = ({ children }: PropsWithChildren) => {
-    const [isOpen, setIsOpen] = useState<boolean>(false);
-    const [type, setType] = useState<"error" | "confirm" | "info">("info");
-    const [message, setMessage] = useState<string>("");
-    const [subMessage, setSubMessage] = useState<string>("");
-    const [onClose, setOnClose] = useState<(() => void) | undefined>(undefined);
+    const [isOpen, setIsOpen] = useState(false);
+    const [type, setType] = useState<ModalType>("info");
+    const [message, setMessage] = useState("");
+    const [subMessage, setSubMessage] = useState("");
+    const [resolver, setResolver] = useState<((value: string | boolean | void) => void) | null>(null);
 
     const open = (
         message: string,
-        type?: "error" | "confirm" | "info",
+        type: ModalType = "info",
         subMessage?: string,
-        onClose?: () => void
-    ) => {
+        onResolve?: () => void
+    ): Promise<string | boolean | void> => {
         setMessage(message);
         setSubMessage(subMessage ?? "");
-        setType(type ?? "info");
-        setOnClose(() => onClose);
+        setType(type);
         setIsOpen(true);
+
+        return new Promise((resolve) => {
+            setResolver(() => (value: string | boolean | void) => {
+                resolve(value);
+                if (onResolve) onResolve();
+            });
+        });
     };
 
-    const close = () => {
+    const close = (response?: string | boolean) => {
         setIsOpen(false);
         setMessage("");
         setSubMessage("");
         setType("info");
-        if (onClose) onClose();
-        setOnClose(undefined);
-    }
 
-    const contextValue: ModalContextType = {
-        isOpen,     // État d'ouverture (afficher/caché)
-        type,       // Type
-        message,    // Message
-        subMessage, // Message Secondaire
-        onClose,    // Action à la fermeture
-        open,       // Ouverture
-        close,      // Fermeture
+        if (resolver) {
+            resolver(response);
+            setResolver(null);
+        }
     };
 
-    return <ModalContext.Provider value={contextValue}>{children}</ModalContext.Provider>;
+    const contextValue: ModalContextType = {
+        isOpen,
+        type,
+        message,
+        subMessage,
+        open: open as ModalContextType["open"],
+        close,
+    };
+
+    return (
+        <ModalContext.Provider value={contextValue}>
+            {children}
+        </ModalContext.Provider>
+    );
 };

@@ -45,7 +45,7 @@ const MyProfileCard = ({ userDetails, garantList, refreshProfile }: MyProfileCar
 
     const sendAddMinecraftAccount = async () => {
         if (selectedGarant <= 0) return modalCtx.open("Merci de selectionner un garant.", "error");
-        const newUsername = prompt("Entrez votre pseudo Minecraft:");
+        const newUsername = await modalCtx.open("Entrez votre pseudo Minecraft:", "prompt");
         if (!newUsername) return;
         await sendRequest({
             key: 51,
@@ -68,7 +68,7 @@ const MyProfileCard = ({ userDetails, garantList, refreshProfile }: MyProfileCar
             method: "POST",
             headers: { Authorization: authCtx.token },
             onSuccess: (data) => {
-                modalCtx.open(data.message, "confirm");
+                modalCtx.open(data.message, "result");
                 refreshProfile();
             },
             onError: (error) => modalCtx.open(error, "error"),
@@ -76,14 +76,14 @@ const MyProfileCard = ({ userDetails, garantList, refreshProfile }: MyProfileCar
     };
 
     const sendDeleteMinecraftAccount = async () => {
-        if (!confirm("Êtes-vous sûr de vouloir délier votre compte Minecraft ?")) return;
+        if (!(await modalCtx.open("Êtes-vous sûr de vouloir délier votre compte Minecraft ?", "confirm"))) return;
         await sendRequest({
             key: 53,
             url: import.meta.env.VITE_PLAY_API_URL + "/profil/minecraft/" + userDetails?.minecraft?.id + "/delete",
             method: "DELETE",
             headers: { Authorization: authCtx.token },
             onSuccess: (data) => {
-                modalCtx.open(data.message, "confirm");
+                modalCtx.open(data.message, "result");
                 refreshProfile();
             },
             onError: (error) => modalCtx.open(error, "error"),
@@ -91,6 +91,7 @@ const MyProfileCard = ({ userDetails, garantList, refreshProfile }: MyProfileCar
     };
 
     const sendUpdateGarant = async () => {
+        if (selectedGarant <= 0) return modalCtx.open("Merci de selectionner un garant.", "error");
         await sendRequest({
             key: 54,
             url: import.meta.env.VITE_PLAY_API_URL + "/profil/garant/" + userDetails?.minecraft?.id + "/update",
@@ -107,14 +108,14 @@ const MyProfileCard = ({ userDetails, garantList, refreshProfile }: MyProfileCar
     };
 
     const sendDeleteUserAccount = async () => {
-        if (!confirm("Êtes-vous sûr de vouloir supprimer votre compte ?")) return;
+        if (!(await modalCtx.open("Êtes-vous sûr de vouloir supprimer votre compte ?", "confirm"))) return;
         await sendRequest({
             key: 55,
             url: import.meta.env.VITE_PLAY_API_URL + "/profil/" + userDetails?.id + "/delete",
             method: "DELETE",
             headers: { Authorization: authCtx.token },
             onSuccess: (data) => {
-                modalCtx.open(data.message, "confirm");
+                modalCtx.open(data.message, "result");
                 location.reload();
             },
             onError: (error) => modalCtx.open(error, "error"),
@@ -149,7 +150,7 @@ const MyProfileCard = ({ userDetails, garantList, refreshProfile }: MyProfileCar
                             onChange={(e) => setSelectedGarant(Number(e.target.value))}
                             className="w-full px-3 py-2 border rounded-md bg-white text-gray-900"
                         >
-                            <option value="">-- Sélectionner un garant --</option>
+                            <option value="0">-- Sélectionnez un garant --</option>
                             {garantList?.map((g) => (
                                 <option key={g.id} value={g.id}>{g.pseudo}</option>
                             ))}
@@ -168,7 +169,7 @@ const MyProfileCard = ({ userDetails, garantList, refreshProfile }: MyProfileCar
                                         onChange={(e) => setSelectedGarant(Number(e.target.value))}
                                         className="w-full px-3 py-2 border rounded-md bg-white text-gray-900"
                                     >
-                                        <option value="">-- Sélectionner un garant --</option>
+                                        <option value="" disabled={true}>-- Sélectionner un garant --</option>
                                         {garantList?.map((g) => (
                                             <option key={g.id} value={g.id}>{g.pseudo}</option>
                                         ))}
@@ -183,7 +184,7 @@ const MyProfileCard = ({ userDetails, garantList, refreshProfile }: MyProfileCar
                                     onChange={(e) => setSelectedGarant(Number(e.target.value))}
                                     className="w-full px-3 py-2 border rounded-md bg-white text-gray-900"
                                 >
-                                    <option value="">-- Sélectionner un garant --</option>
+                                    <option value="0">-- Sélectionner un garant --</option>
                                     {garantList?.map((g) => (
                                         <option key={g.id} value={g.id}>{g.pseudo}</option>
                                     ))}

@@ -16,7 +16,7 @@ const PendingUserList = (props: PendingUserListProps) => {
     const authCtx = useContext(AuthContext);
 
     const sendAcceptedChild = async (user: UserType) => {
-        const confirmAccepting = confirm("Êtes-vous sûr de vouloir vous portez garant de " + user.minecraft?.pseudo + "? En cas de problème de problème avec cette personne, vous pourriez subir des répercussions !");
+        const confirmAccepting = await modalCtx.open("Êtes-vous sûr de vouloir vous portez garant de " + user.minecraft?.pseudo + "? En cas de problème de problème avec cette personne, vous pourriez subir des répercussions !", "confirm");
         if (confirmAccepting) {
             await sendRequest({
                 key: 110,
@@ -24,7 +24,7 @@ const PendingUserList = (props: PendingUserListProps) => {
                 method: 'POST',
                 headers: { Authorization: authCtx.token },
                 onSuccess: (data) => {
-                    modalCtx.open(data.message, "confirm");
+                    modalCtx.open(data.message, "result");
                     props.refreshList();
                 },
                 onError: (error) => {
@@ -35,7 +35,7 @@ const PendingUserList = (props: PendingUserListProps) => {
     }
 
     const sendRefusedChild = async (user: UserType) => {
-        const confirmAccepting = confirm("Souhaitez-vous refuser de vous porter garant de " + user.minecraft?.pseudo + "?");
+        const confirmAccepting = await modalCtx.open("Souhaitez-vous refuser de vous porter garant de " + user.minecraft?.pseudo + "?", "confirm");
         if (confirmAccepting) {
             await sendRequest({
                 key: 111,
@@ -43,7 +43,7 @@ const PendingUserList = (props: PendingUserListProps) => {
                 method: 'POST',
                 headers: { Authorization: authCtx.token },
                 onSuccess: (data) => {
-                    modalCtx.open(data.message, "confirm");
+                    modalCtx.open(data.message, "result");
                     props.refreshList();
                 },
                 onError: (error) => {
