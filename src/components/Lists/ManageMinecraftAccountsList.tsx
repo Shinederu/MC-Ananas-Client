@@ -1,10 +1,11 @@
 import { AuthContext } from "@/shared/context/AuthContext";
 import { ModalContext } from "@/shared/context/ModalContext";
 import { useHttpClient } from "@/shared/hooks/http-hook";
+import { useInterval } from "@/shared/hooks/useInterval";
 import { MinecraftUserType } from "@/types/User";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 
-const ManageMinecraftAccounts = () => {
+const ManageMinecraftAccountsList = () => {
 
     const { sendRequest } = useHttpClient();
     const modalCtx = useContext(ModalContext);
@@ -51,16 +52,16 @@ const ManageMinecraftAccounts = () => {
         }
     }
 
-    useEffect(() => {
+    useInterval(() => {
         sendGetMinecraftsAccount();
-    }, []);
+    },5000);
 
     return (
         <>
             <div className="w-full bg-gradient-to-br from-yellow-300 to-red-500 p-6 rounded-2xl shadow-lg text-white">
                 <h1 className="text-3xl font-bold text-center mb-4">Gestion des comptes Minecraft</h1>
                 <p>Voici les comptes Minecraft actuellement liés</p>
-                <table className="rounded-lg w-full">
+                <table className="rounded-lg w-full mt-4">
                     <tbody>
                         <tr className="bg-gray-500 text-white">
                             <th className="px-4 py-2 text-center">Minecraft</th>
@@ -78,7 +79,6 @@ const ManageMinecraftAccounts = () => {
                                         <td className="px-4 py-2">{minecraftUser.pseudo}</td>
                                         <td className="px-4 py-2">{minecraftUser.user.username}</td>
                                         <th className="px-4 py-2 text-center">{minecraftUser.garant?.pseudo}</th>
-                                        <td className="px-4 py-2">{minecraftUser.verifyBy?.username}</td>
                                         <td className="flex justify-center px-4 py-2 gap-2">
                                             <button className="b-2 border px-2 font-bold bg-red-600 hover:scale-125 transition" onClick={() => remove(minecraftUser)}>Supprimer</button>
                                         </td>
@@ -100,4 +100,4 @@ const ManageMinecraftAccounts = () => {
         </>
     );
 }
-export default ManageMinecraftAccounts;
+export default ManageMinecraftAccountsList;

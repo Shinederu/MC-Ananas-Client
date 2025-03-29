@@ -1,18 +1,14 @@
 import EditModpackInfosCard from "@/components/cards/EditModpackInfosCard";
-import ManageMinecraftAccounts from "@/components/Lists/ManageMinecraftAccounts";
+import MinecraftServerControlsCard from "@/components/cards/MinecraftServerControlsCard";
+import ManageMinecraftAccountsList from "@/components/Lists/ManageMinecraftAccountsList";
 
 const Management = () => {
     return (
         <>
-
-
-            <div className="grid grid-cols-2 w-full h-full p-4 gap-4 items-stretch">
-                <div className="flex flex-col gap-4 w-full h-full">
-                    <EditModpackInfosCard />
-                </div>
-                <div className="flex flex-col gap-4 w-full h-full">
-                    <ManageMinecraftAccounts />
-                </div>
+            <div className="flex w-full h-full p-4 gap-4">
+                <EditModpackInfosCard />
+                <ManageMinecraftAccountsList />
+                <MinecraftServerControlsCard />
             </div>
 
         </>

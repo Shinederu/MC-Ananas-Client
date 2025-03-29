@@ -45,7 +45,7 @@ const CurrentChildList = (props: CurrentChildListProps) => {
             <div className="w-full bg-gradient-to-br from-yellow-300 to-red-500 p-6 rounded-2xl shadow-lg text-white">
                 <h1 className="text-3xl font-bold text-center mb-4">Vos enfants !</h1>
                 <p>Voici toutes les personnes dont vous êtes le garant ! Suveillez les correctement ^^</p>
-                <table className="rounded-lg w-full">
+                <table className="rounded-lg w-full mt-4">
                     <tbody>
                         <tr className="bg-gray-500 text-white">
                             <th className="px-4 py-2 text-center">Minecraft</th>

@@ -16,8 +16,6 @@ const Server = () => {
                 <div className="col-span-3">
 
                     <div className="bg-gray-300 rounded-2xl shadow-lg p-4 h-full flex flex-col gap-2">
-                        <div className="flex justify-end">
-                        </div>
                         <iframe src="https://bluemap.play.shinederu.lol" className="w-full h-full rounded-2xl shadow-lg" title="BlueMap" />
                     </div>
 
