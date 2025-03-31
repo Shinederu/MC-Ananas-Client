@@ -1,6 +1,7 @@
 import { AuthContext } from "@/shared/context/AuthContext";
 import { ModalContext } from "@/shared/context/ModalContext";
 import { useHttpClient } from "@/shared/hooks/http-hook";
+import { useInterval } from "@/shared/hooks/useInterval";
 import { MinecraftUserType } from "@/types/User";
 import { useContext, useEffect, useRef, useState } from "react";
 import Tree from "react-d3-tree";
@@ -118,15 +119,15 @@ const MinecraftGarantTreeCard = () => {
     };
 
     useEffect(() => {
-        launchControl();
-    }, []);
-
-    useEffect(() => {
         if (containerRef.current) {
             const { width } = containerRef.current.getBoundingClientRect();
             setTranslate({ x: width / 2, y: 60 });
         }
     }, []);
+
+    useInterval(() => {
+        launchControl();
+    }, 5000);
 
     return (
         <div className="bg-gradient-to-br from-blue-600 to-cyan-300 p-6 rounded-2xl shadow-lg text-white w-full">
@@ -146,12 +147,6 @@ const MinecraftGarantTreeCard = () => {
                     <p className="text-center text-lg">Aucune donnée à afficher.</p>
                 )}
             </div>
-            <button
-                onClick={launchControl}
-                className="mt-4 mx-auto block bg-white text-black font-bold py-2 px-4 rounded hover:bg-gray-200 transition"
-            >
-                Actualiser
-            </button>
         </div>
     );
 };

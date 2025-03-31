@@ -1,5 +1,8 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { AuthContext } from "@/shared/context/AuthContext";
+import { ModalContext } from "@/shared/context/ModalContext";
+import { useHttpClient } from "@/shared/hooks/http-hook";
 
 const getRandomEmoji = () => {
   const emojis = ["🥵", "💀", "😂", "🐸", "🤡", "😭", "😈", "🥶"];
@@ -9,12 +12,34 @@ const getRandomEmoji = () => {
 const Banned = () => {
   const [showText, setShowText] = useState(false);
   const [emojis, setEmojis] = useState<string[]>([]);
+  const [reason, setReason] = useState<string>("");
+
+  const { sendRequest } = useHttpClient();
+  const modalCtx = useContext(ModalContext);
+  const authCtx = useContext(AuthContext);
+
+  const sendGetBanReason = async () => {
+    await sendRequest({
+      key: 101,
+      url: import.meta.env.VITE_PLAY_API_URL + "/ban",
+      method: "GET",
+      headers: { Authorization: authCtx.token },
+      onSuccess: (data) => {
+        setReason(data.message);
+      },
+      onError: (error) => {
+        modalCtx.open(error, "error");
+      },
+    });
+  };
 
   useEffect(() => {
     const timer = setTimeout(() => setShowText(true), 1000);
     const emojiInterval = setInterval(() => {
       setEmojis((prev) => [...prev, getRandomEmoji()]);
     }, 500);
+    sendGetBanReason();
+
     return () => {
       clearTimeout(timer);
       clearInterval(emojiInterval);
@@ -23,10 +48,10 @@ const Banned = () => {
 
   return (
     <div className="relative h-screen w-screen overflow-hidden bg-gradient-to-br from-purple-900 via-black to-indigo-900 text-white flex items-center justify-center p-6">
-      {/* Fond bruité et animé */}
+      {/* Fond bruité */}
       <div className="absolute inset-0 bg-[url('/noise.gif')] opacity-10 mix-blend-soft-light pointer-events-none z-0" />
 
-      {/* Vagues SVG au fond */}
+      {/* Vague de fond */}
       <div className="absolute bottom-0 w-full z-0">
         <svg viewBox="0 0 1440 320">
           <path
@@ -74,6 +99,19 @@ const Banned = () => {
           )}
         </AnimatePresence>
 
+        {/* Raison du bannissement */}
+        {reason && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1.2, delay: 0.5 }}
+            className="bg-black/30 border border-purple-600 rounded-xl p-4 max-w-xl mx-auto text-purple-300 shadow-lg backdrop-blur-sm"
+          >
+            <p className="text-sm md:text-base italic">Raison du bannissement :</p>
+            <p className="text-lg md:text-xl mt-2 font-semibold text-purple-400">« {reason} »</p>
+          </motion.div>
+        )}
+
         <motion.div
           initial={{ rotate: -10 }}
           animate={{ rotate: 10 }}
@@ -90,12 +128,10 @@ const Banned = () => {
           Supprimer ma douleur
         </motion.button>
 
-        {/* Compteur infini */}
         <p className="text-sm text-purple-400 mt-4 animate-pulse">
           Temps avant réintégration : ∞ années 😭
         </p>
 
-        {/* Citation dramatique */}
         <motion.p
           animate={{ scale: [1, 1.1, 1] }}
           transition={{ repeat: Infinity, duration: 4 }}
@@ -105,7 +141,7 @@ const Banned = () => {
         </motion.p>
       </div>
 
-      {/* Bouton qui fuit */}
+      {/* Bouton troll */}
       <motion.button
         className="absolute top-4 left-4 px-3 py-1 bg-pink-600 text-white rounded hover:scale-105 transition-transform duration-300"
         whileHover={{ x: 1700 * Math.random(), y: 1500 * Math.random() }}
