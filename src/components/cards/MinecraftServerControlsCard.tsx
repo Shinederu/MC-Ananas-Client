@@ -50,7 +50,7 @@ const MinecraftServerControlsCard = () => {
             headers: { Authorization: authCtx.token },
             body: { command: commandtoSend },
             onSuccess: (data) => {
-                modalCtx.open(data.message, "result");
+                modalCtx.open(data.message, "result", data.response.replace(/\u0000/g, '').replace(/§[0-9a-fklmnor]/gi, '').replace(/\x1B\[[0-9;]*m/g, '').trim());
             },
             onError: (error) => {
                 modalCtx.open(error, "error");
@@ -58,11 +58,11 @@ const MinecraftServerControlsCard = () => {
         });
     }
 
-    const sendWhitelistSync = async () => {
+    const sendServerSync = async () => {
         await sendRequest({
             key: 33,
-            url: import.meta.env.VITE_PLAY_API_URL + '/management/minecraft/whitelist-sync',
-            method: 'POST',
+            url: import.meta.env.VITE_PLAY_API_URL + '/server/server-off',
+            method: 'GET',
             headers: { Authorization: authCtx.token },
             onSuccess: (data) => {
                 modalCtx.open(data.message, "result");
@@ -110,7 +110,7 @@ const MinecraftServerControlsCard = () => {
                     <button onClick={() => sendMinecraftCommand("whitelist off")} className="border p-2 rounded-md font-bold bg-green-600 hover:scale-105 transition-transform">
                         Désactiver
                     </button>
-                    <button onClick={() => sendWhitelistSync()} className=" col-span-2 border p-2 rounded-md font-bold bg-blue-600 hover:scale-105 transition-transform">
+                    <button onClick={() => sendServerSync()} className=" col-span-2 border p-2 rounded-md font-bold bg-blue-600 hover:scale-105 transition-transform">
                         Synchroniser
                     </button>
                 </div >

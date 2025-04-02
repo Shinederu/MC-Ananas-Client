@@ -14,6 +14,8 @@ const Management = () => {
             <div className="flex w-full h-full p-4 gap-4">
                 <MinecraftGarantTreeCard />
             </div>
+
+            
         </>
     );
 };
