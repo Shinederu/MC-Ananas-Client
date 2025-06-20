@@ -54,7 +54,7 @@ const ServerInfoCard = () => {
 
     return (
         <div className="w-full max-w-sm sm:max-w-md md:max-w-lg mx-auto p-6 sm:p-8 flex flex-col items-center justify-center bg-gradient-to-br from-blue-400 to-purple-500 rounded-2xl shadow-lg text-white space-y-6">
-            <h1 className="text-3xl sm:text-4xl font-bold text-center">CobbleAnanas</h1>
+            <h1 className="text-3xl sm:text-4xl font-bold text-center">All The Ananas</h1>
             {serverInfo.icon && (
                 <img
                     className="w-20 h-20 sm:w-24 sm:h-24 rounded-full border-2 border-white object-cover"
